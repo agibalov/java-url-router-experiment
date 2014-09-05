@@ -1,5 +1,7 @@
 package me.loki2302;
 
+import java.util.Map;
+
 public class Route {
     private final RouteSegment[] routeSegments;
 
@@ -23,5 +25,16 @@ public class Route {
         }
 
         return true;
+    }
+
+    public String build(Map<String, Object> context) {
+        StringBuilder sb = new StringBuilder();
+        for(RouteSegment routeSegment : routeSegments) {
+            String value = routeSegment.getValue(context);
+            sb.append(value);
+            sb.append("/");
+        }
+
+        return sb.toString();
     }
 }

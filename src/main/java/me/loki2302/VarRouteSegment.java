@@ -1,7 +1,9 @@
 package me.loki2302;
 
+import java.util.Map;
+
 public class VarRouteSegment implements RouteSegment {
-    private String name;
+    private final String name;
 
     public VarRouteSegment(String name) {
         this.name = name;
@@ -14,5 +16,10 @@ public class VarRouteSegment implements RouteSegment {
         }
 
         return SegmentMatchResult.matchSingletonContext(name, urlSegment);
+    }
+
+    @Override
+    public String getValue(Map<String, Object> context) {
+        return String.valueOf(context.get(name));
     }
 }

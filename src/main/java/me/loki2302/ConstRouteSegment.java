@@ -1,7 +1,9 @@
 package me.loki2302;
 
+import java.util.Map;
+
 public class ConstRouteSegment implements RouteSegment {
-    private String value;
+    private final String value;
 
     public ConstRouteSegment(String value) {
         this.value = value;
@@ -14,5 +16,10 @@ public class ConstRouteSegment implements RouteSegment {
         }
 
         return SegmentMatchResult.matchNoContext();
+    }
+
+    @Override
+    public String getValue(Map<String, Object> context) {
+        return value;
     }
 }
