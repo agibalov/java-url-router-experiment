@@ -1,4 +1,4 @@
-package me.loki2302;
+package me.loki2302.routing;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +33,10 @@ public class Router {
         }
 
         RouteMatchResult singleResult = routeMatches.get(0);
-        return RouteResolutionResult.singleMatchingRoute(singleResult.route, singleResult.context);
+        String description = routes.get(singleResult.route);
+        return RouteResolutionResult.singleMatchingRoute(
+                description,
+                singleResult.route,
+                singleResult.context);
     }
-
 }

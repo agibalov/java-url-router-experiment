@@ -1,5 +1,8 @@
 package me.loki2302;
 
+import me.loki2302.routing.RouteResolutionResult;
+import me.loki2302.routing.Router;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -9,8 +12,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import static me.loki2302.routing.RouterDSL.*;
+
 @WebServlet(name = "dummy", urlPatterns = "/*")
 public class DummyServlet extends HttpServlet {
+    private final Router router = new Router()
+            .addRoute(route(c("")), "Root")
+            .addRoute(route(c("page1")), "Page 1")
+            .addRoute(route(c("page2")), "Page 2")
+            .addRoute(route(c("extras")), "Extras with no ID")
+            .addRoute(route(c("extras"), v("id")), "Extras with ID");
+
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter printWriter = resp.getWriter();
@@ -37,6 +49,23 @@ public class DummyServlet extends HttpServlet {
             }
 
             printWriter.println();
+        }
+
+        RouteResolutionResult routeResolutionResult = router.resolve(req.getPathInfo());
+        if(!routeResolutionResult.resolved) {
+            printWriter.println("Didn't resolve the route");
+        } else {
+            printWriter.printf("Resolved route is '%s'\n", routeResolutionResult.description);
+
+            Map<String, Object> context = routeResolutionResult.context;
+            if(context.isEmpty()) {
+                printWriter.println("Context is empty");
+            } else {
+                printWriter.println("Context is:");
+                for (String key : context.keySet()) {
+                    printWriter.printf("  '%s': '%s'\n", key, context.get(key));
+                }
+            }
         }
 
         printWriter.close();

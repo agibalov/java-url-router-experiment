@@ -1,4 +1,4 @@
-package me.loki2302;
+package me.loki2302.routing;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package me.loki2302;
+package me.loki2302.routing;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +11,10 @@ public class Route {
     }
 
     public RouteMatchResult match(String url) {
+        if(url.startsWith("/")) {
+            url = url.substring(1);
+        }
+
         String[] urlSegments = url.split("/");
         if(urlSegments.length != routeSegments.length) {
             return RouteMatchResult.noMatch(this);
@@ -41,5 +45,4 @@ public class Route {
 
         return sb.toString();
     }
-
 }

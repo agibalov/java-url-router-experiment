@@ -1,4 +1,4 @@
-package me.loki2302;
+package me.loki2302.routing;
 
 public final class RouterDSL {
     public static Route route(RouteSegment... routeSegment) {
