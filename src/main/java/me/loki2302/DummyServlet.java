@@ -4,7 +4,6 @@ import me.loki2302.routing.RouteResolutionResult;
 import me.loki2302.routing.Router;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +13,6 @@ import java.util.Map;
 
 import static me.loki2302.routing.RouterDSL.*;
 
-@WebServlet(name = "dummy", urlPatterns = "/*")
 public class DummyServlet extends HttpServlet {
     private final Router router = new Router()
             .addRoute(route(c("")), "Root")
@@ -51,7 +49,7 @@ public class DummyServlet extends HttpServlet {
             printWriter.println();
         }
 
-        RouteResolutionResult routeResolutionResult = router.resolve(req.getPathInfo());
+        RouteResolutionResult routeResolutionResult = router.resolve(req.getRequestURI());
         if(!routeResolutionResult.resolved) {
             printWriter.println("Didn't resolve the route");
         } else {
