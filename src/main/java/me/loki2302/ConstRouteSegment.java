@@ -12,10 +12,10 @@ public class ConstRouteSegment implements RouteSegment {
     @Override
     public SegmentMatchResult match(String urlSegment) {
         if(!urlSegment.equals(value)) {
-            return SegmentMatchResult.noMatch();
+            return SegmentMatchResult.noMatch(this);
         }
 
-        return SegmentMatchResult.matchNoContext();
+        return SegmentMatchResult.matchNoContext(this);
     }
 
     @Override

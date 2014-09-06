@@ -12,10 +12,10 @@ public class VarRouteSegment implements RouteSegment {
     @Override
     public SegmentMatchResult match(String urlSegment) {
         if(urlSegment.isEmpty()) {
-            return SegmentMatchResult.noMatch();
+            return SegmentMatchResult.noMatch(this);
         }
 
-        return SegmentMatchResult.matchSingletonContext(name, urlSegment);
+        return SegmentMatchResult.matchSingletonContext(this, name, urlSegment);
     }
 
     @Override

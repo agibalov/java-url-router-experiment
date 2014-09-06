@@ -1,5 +1,6 @@
 package me.loki2302;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Route {
@@ -9,22 +10,25 @@ public class Route {
         this.routeSegments = routeSegments;
     }
 
-    public boolean match(String url) {
+    public RouteMatchResult match(String url) {
         String[] urlSegments = url.split("/");
         if(urlSegments.length != routeSegments.length) {
-            return false;
+            return RouteMatchResult.noMatch(this);
         }
 
+        Map<String, Object> context = new HashMap<String, Object>();
         for(int i = 0; i < routeSegments.length; ++i) {
             RouteSegment routeSegment = routeSegments[i];
             String urlSegment = urlSegments[i];
             SegmentMatchResult matchResult = routeSegment.match(urlSegment);
             if(!matchResult.match) {
-                return false;
+                return RouteMatchResult.noMatch(this);
             }
+
+            context.putAll(matchResult.context);
         }
 
-        return true;
+        return RouteMatchResult.match(this, context);
     }
 
     public String build(Map<String, Object> context) {
@@ -37,4 +41,5 @@ public class Route {
 
         return sb.toString();
     }
+
 }
