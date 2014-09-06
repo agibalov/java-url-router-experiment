@@ -20,7 +20,7 @@ public class DummyServletContextListener implements ServletContextListener {
         ServletContext servletContext = sce.getServletContext();
         ServletRegistration.Dynamic servletRegistration =
                 servletContext.addServlet("dummyServlet", dummyServlet);
-                                                                                                                servletRegistration.addMapping("/");
+        servletRegistration.addMapping("/");
     }
 
     @Override
