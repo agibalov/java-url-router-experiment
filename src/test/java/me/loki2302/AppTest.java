@@ -1,14 +1,14 @@
 package me.loki2302;
 
-import me.loki2302.routing.Route;
-import me.loki2302.routing.RouteResolutionResult;
-import me.loki2302.routing.Router;
+import me.loki2302.framework.routing.Route;
+import me.loki2302.framework.routing.RouteResolutionResult;
+import me.loki2302.framework.routing.Router;
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Map;
 
-import static me.loki2302.routing.RouterDSL.*;
+import static me.loki2302.framework.routing.RouterDSL.*;
 import static org.junit.Assert.*;
 
 public class AppTest {
