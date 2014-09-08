@@ -2,9 +2,9 @@ package me.loki2302.routing;
 
 import java.util.Map;
 
-public class RouteResolutionResult {
+public class RouteResolutionResult<THandler> {
     public boolean resolved;
-    public String description;
+    public THandler handler;
     public Route route;
     public Map<String, Object> context;
 
@@ -20,10 +20,10 @@ public class RouteResolutionResult {
         return result;
     }
 
-    public static RouteResolutionResult singleMatchingRoute(String description, Route route, Map<String, Object> context) {
+    public static <THandler> RouteResolutionResult singleMatchingRoute(THandler handler, Route route, Map<String, Object> context) {
         RouteResolutionResult result = new RouteResolutionResult();
         result.resolved = true;
-        result.description = description;
+        result.handler = handler;
         result.route = route;
         result.context = context;
         return result;

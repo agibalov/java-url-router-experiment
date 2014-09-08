@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 
 public class DummyServlet extends HttpServlet {
-    private final Router router;
+    private final Router<String> router;
 
     @Inject
     public DummyServlet(Router router) {
@@ -52,7 +52,7 @@ public class DummyServlet extends HttpServlet {
         if(!routeResolutionResult.resolved) {
             printWriter.println("Didn't resolve the route");
         } else {
-            printWriter.printf("Resolved route is '%s'\n", routeResolutionResult.description);
+            printWriter.printf("Resolved route is '%s'\n", routeResolutionResult.handler);
 
             Map<String, Object> context = routeResolutionResult.context;
             if(context.isEmpty()) {

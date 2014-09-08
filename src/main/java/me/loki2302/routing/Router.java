@@ -5,15 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Router {
-    private Map<Route, String> routes = new HashMap<Route, String>();
+public class Router<THandler> {
+    private Map<Route, THandler> routes = new HashMap<Route, THandler>();
 
-    public Router addRoute(Route route, String description) {
-        routes.put(route, description);
+    public Router addRoute(Route route, THandler handler) {
+        routes.put(route, handler);
         return this;
     }
 
-    public RouteResolutionResult resolve(String url) {
+    public RouteResolutionResult<THandler> resolve(String url) {
         List<RouteMatchResult> routeMatches = new ArrayList<RouteMatchResult>();
         for(Route route : routes.keySet()) {
             RouteMatchResult routeMatchResult = route.match(url);
@@ -33,9 +33,9 @@ public class Router {
         }
 
         RouteMatchResult singleResult = routeMatches.get(0);
-        String description = routes.get(singleResult.route);
+        THandler handler = routes.get(singleResult.route);
         return RouteResolutionResult.singleMatchingRoute(
-                description,
+                handler,
                 singleResult.route,
                 singleResult.context);
     }
