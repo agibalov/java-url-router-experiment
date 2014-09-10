@@ -3,6 +3,7 @@ package me.loki2302;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import me.loki2302.framework.HandlerResultProcessorRegistry;
+import me.loki2302.framework.InputStreamHandlerResultProcessor;
 import me.loki2302.framework.ModelAndViewHandlerResultProcessor;
 import me.loki2302.framework.RouteHandler;
 import me.loki2302.framework.routing.Router;
@@ -16,10 +17,13 @@ public class DummyModule extends AbstractModule {
 
         Router<Class<? extends RouteHandler>> router = new Router<Class<? extends RouteHandler>>()
                 .addRoute(route(c("")), IndexRouteHandler.class)
-                .addRoute(route(c("page"), v("id")), PageRouteHandler.class);
+                .addRoute(route(c("page"), v("id")), PageRouteHandler.class)
+                .addRoute(route(c("css")), ResourceRouteHandler.class);
+
         bind(new TypeLiteral<Router<Class<? extends RouteHandler>>>() {}).toInstance(router);
 
         bind(ModelAndViewHandlerResultProcessor.class).asEagerSingleton();
+        bind(InputStreamHandlerResultProcessor.class).asEagerSingleton();
         bind(HandlerResultProcessorRegistry.class).asEagerSingleton();
     }
 }

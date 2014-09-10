@@ -1,6 +1,5 @@
 package me.loki2302;
 
-import me.loki2302.framework.ModelAndView;
 import me.loki2302.framework.RouteHandler;
 
 import java.util.Collections;
@@ -15,4 +14,5 @@ public class PageRouteHandler implements RouteHandler {
                 Collections.singletonMap("pageId", context.get("id")),
                 "page");
     }
+
 }

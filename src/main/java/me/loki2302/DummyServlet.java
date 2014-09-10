@@ -2,10 +2,7 @@ package me.loki2302;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import me.loki2302.framework.HandlerResultProcessor;
-import me.loki2302.framework.HandlerResultProcessorRegistry;
-import me.loki2302.framework.ModelAndViewHandlerResultProcessor;
-import me.loki2302.framework.RouteHandler;
+import me.loki2302.framework.*;
 import me.loki2302.framework.routing.RouteResolutionResult;
 import me.loki2302.framework.routing.Router;
 
@@ -34,6 +31,7 @@ public class DummyServlet extends HttpServlet {
 
         // TODO: get rid of this asap
         handlerResultProcessorRegistry.register(injector.getInstance(ModelAndViewHandlerResultProcessor.class));
+        handlerResultProcessorRegistry.register(injector.getInstance(InputStreamHandlerResultProcessor.class));
         //
     }
 

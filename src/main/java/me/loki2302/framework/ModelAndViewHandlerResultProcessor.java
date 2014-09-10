@@ -5,6 +5,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 public class ModelAndViewHandlerResultProcessor implements HandlerResultProcessor {
@@ -25,4 +26,5 @@ public class ModelAndViewHandlerResultProcessor implements HandlerResultProcesso
         response.setStatus(HttpServletResponse.SC_OK);
         jspRequestDispatcher.forward(request, response);
     }
+
 }
