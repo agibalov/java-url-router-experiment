@@ -41,15 +41,17 @@ public class DummyServlet extends HttpServlet {
         Map<String, Object> context = routeResolutionResult.context;
         Class<? extends RouteHandler> handlerClass = routeResolutionResult.handler;
         RouteHandler routeHandler = injector.getInstance(handlerClass);
-        ModelAndView modelAndView = routeHandler.handle(context);
+        Object handlerResult = routeHandler.handle(context);
+        if(handlerResult instanceof ModelAndView) {
+            ModelAndView modelAndView = (ModelAndView)handlerResult;
+            Map<String, Object> model = modelAndView.model;
+            req.setAttribute("model", model);
 
-        Map<String, Object> model = modelAndView.model;
-        req.setAttribute("model", model);
+            String view = modelAndView.view;
+            RequestDispatcher jspRequestDispatcher = req.getRequestDispatcher("/WEB-INF/" + view + ".jsp");
 
-        String view = modelAndView.view;
-        RequestDispatcher jspRequestDispatcher = req.getRequestDispatcher("/WEB-INF/" + view + ".jsp");
-
-        resp.setStatus(HttpServletResponse.SC_OK);
-        jspRequestDispatcher.forward(req, resp);
+            resp.setStatus(HttpServletResponse.SC_OK);
+            jspRequestDispatcher.forward(req, resp);
+        }
     }
 }
