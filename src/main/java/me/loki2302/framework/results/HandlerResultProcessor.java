@@ -1,4 +1,4 @@
-package me.loki2302.framework;
+package me.loki2302.framework.results;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

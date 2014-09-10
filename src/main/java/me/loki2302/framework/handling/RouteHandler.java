@@ -1,4 +1,4 @@
-package me.loki2302.framework;
+package me.loki2302.framework.handling;
 
 import java.util.Map;
 

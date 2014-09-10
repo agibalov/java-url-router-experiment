@@ -1,5 +1,6 @@
-package me.loki2302.framework;
+package me.loki2302.framework.results.is;
 
+import me.loki2302.framework.results.HandlerResultProcessor;
 import org.apache.commons.io.IOUtils;
 
 import javax.servlet.ServletException;

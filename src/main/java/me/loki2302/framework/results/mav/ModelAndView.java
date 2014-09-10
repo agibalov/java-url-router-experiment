@@ -1,4 +1,4 @@
-package me.loki2302.framework;
+package me.loki2302.framework.results.mav;
 
 import java.util.Map;
 

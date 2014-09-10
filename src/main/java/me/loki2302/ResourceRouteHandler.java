@@ -1,6 +1,6 @@
 package me.loki2302;
 
-import me.loki2302.framework.RouteHandler;
+import me.loki2302.framework.handling.RouteHandler;
 
 import java.util.Map;
 
