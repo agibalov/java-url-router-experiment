@@ -2,12 +2,13 @@ package me.loki2302;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import me.loki2302.framework.ModelAndView;
+import me.loki2302.framework.HandlerResultProcessor;
+import me.loki2302.framework.HandlerResultProcessorRegistry;
+import me.loki2302.framework.ModelAndViewHandlerResultProcessor;
 import me.loki2302.framework.RouteHandler;
 import me.loki2302.framework.routing.RouteResolutionResult;
 import me.loki2302.framework.routing.Router;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,11 +20,21 @@ import java.util.Map;
 public class DummyServlet extends HttpServlet {
     private final Injector injector;
     private final Router<Class<? extends RouteHandler>> router;
+    private final HandlerResultProcessorRegistry handlerResultProcessorRegistry;
 
     @Inject
-    public DummyServlet(Injector injector, Router<Class<? extends RouteHandler>> router) {
+    public DummyServlet(
+            Injector injector,
+            Router<Class<? extends RouteHandler>> router,
+            HandlerResultProcessorRegistry handlerResultProcessorRegistry) {
+
         this.injector = injector;
         this.router = router;
+        this.handlerResultProcessorRegistry = handlerResultProcessorRegistry;
+
+        // TODO: get rid of this asap
+        handlerResultProcessorRegistry.register(injector.getInstance(ModelAndViewHandlerResultProcessor.class));
+        //
     }
 
     @Override
@@ -42,16 +53,13 @@ public class DummyServlet extends HttpServlet {
         Class<? extends RouteHandler> handlerClass = routeResolutionResult.handler;
         RouteHandler routeHandler = injector.getInstance(handlerClass);
         Object handlerResult = routeHandler.handle(context);
-        if(handlerResult instanceof ModelAndView) {
-            ModelAndView modelAndView = (ModelAndView)handlerResult;
-            Map<String, Object> model = modelAndView.model;
-            req.setAttribute("model", model);
-
-            String view = modelAndView.view;
-            RequestDispatcher jspRequestDispatcher = req.getRequestDispatcher("/WEB-INF/" + view + ".jsp");
-
-            resp.setStatus(HttpServletResponse.SC_OK);
-            jspRequestDispatcher.forward(req, resp);
+        HandlerResultProcessor handlerResultProcessor = handlerResultProcessorRegistry.resolve(handlerResult);
+        if(handlerResultProcessor == null) {
+            PrintWriter printWriter = resp.getWriter();
+            printWriter.println("Failed to resolve result processor");
+            printWriter.close();
         }
+
+        handlerResultProcessor.process(handlerResult, req, resp);
     }
 }
