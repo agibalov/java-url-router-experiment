@@ -1,8 +1,10 @@
-package me.loki2302.framework.routing;
+package me.loki2302.framework.routing.naive;
 
-public final class RouterDSL {
+import me.loki2302.framework.routing.Route;
+
+public final class NaiveRouteDSL {
     public static Route route(RouteSegment... routeSegment) {
-        return new Route(routeSegment);
+        return new NaiveRoute(routeSegment);
     }
 
     public static RouteSegment c(String value) {

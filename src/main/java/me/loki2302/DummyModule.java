@@ -8,7 +8,7 @@ import me.loki2302.framework.results.mav.ModelAndViewHandlerResultProcessor;
 import me.loki2302.framework.handling.RouteHandler;
 import me.loki2302.framework.routing.Router;
 
-import static me.loki2302.framework.routing.RouterDSL.*;
+import static me.loki2302.framework.routing.naive.NaiveRouteDSL.*;
 
 public class DummyModule extends AbstractModule {
     @Override
