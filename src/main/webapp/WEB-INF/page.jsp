@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Page ${model.pageId}</title>
+        <link rel="stylesheet" type="text/css" href="/static/style.css">
     </head>
     <body>
         <h1>Page ${model.pageId}</h1>
