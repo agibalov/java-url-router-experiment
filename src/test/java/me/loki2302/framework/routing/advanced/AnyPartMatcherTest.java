@@ -1,5 +1,6 @@
 package me.loki2302.framework.routing.advanced;
 
+import me.loki2302.framework.routing.RouteMatchResult;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -15,4 +16,5 @@ public class AnyPartMatcherTest {
         assertEquals(1, result.context.size());
         assertEquals("/hello/there/123", result.context.get("path"));
     }
+
 }
