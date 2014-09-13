@@ -1,7 +1,5 @@
 package me.loki2302.framework.handling;
 
-import me.loki2302.framework.handling.RouteHandler;
-
 import java.util.Map;
 
 public class ResourceRouteHandler implements RouteHandler {
