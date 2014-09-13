@@ -12,12 +12,12 @@ public class ResourceRouteHandler implements RouteHandler {
     }
 
     @Override
-    public Object handle(Map<String, Object> context) {
-        if(!context.containsKey(pathContextVariableName)) {
+    public Object handle(Map<String, Object> pathContext, Map<String, String> formContext) {
+        if(!pathContext.containsKey(pathContextVariableName)) {
             throw new RuntimeException("Context doesn't have " + pathContextVariableName);
         }
 
-        String relativePath = (String)context.get(pathContextVariableName);
+        String relativePath = (String) pathContext.get(pathContextVariableName);
         return getClass().getResourceAsStream(root + relativePath);
     }
 }

@@ -9,9 +9,9 @@ import static me.loki2302.framework.results.mav.ModelAndView.modelAndView;
 
 public class PageRouteHandler implements RouteHandler {
     @Override
-    public Object handle(Map<String, Object> context) {
+    public Object handle(Map<String, Object> pathContext, Map<String, String> formContext) {
         return modelAndView(
-                Collections.singletonMap("pageId", context.get("id")),
+                Collections.singletonMap("pageId", pathContext.get("id")),
                 "page");
     }
 }

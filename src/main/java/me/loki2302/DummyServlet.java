@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 
 public class DummyServlet extends HttpServlet {
@@ -51,10 +52,22 @@ public class DummyServlet extends HttpServlet {
             return;
         }
 
-        Map<String, Object> context = routeResolutionResult.context;
+        Map<String, String[]> parameterMap = req.getParameterMap();
+        Map<String, String> formContext = new HashMap<String, String>();
+        for(String parameterName : parameterMap.keySet()) {
+            String[] parameterValues = parameterMap.get(parameterName);
+            if(parameterValues.length != 1) {
+                throw new RuntimeException("Don't know how to handle multiple parameter values");
+            }
+
+            String singleValue = parameterValues[0];
+            formContext.put(parameterName, singleValue);
+        }
+
+        Map<String, Object> pathContext = routeResolutionResult.context;
         Class<? extends RouteHandler> handlerClass = routeResolutionResult.handler;
         RouteHandler routeHandler = injector.getInstance(handlerClass);
-        Object handlerResult = routeHandler.handle(context);
+        Object handlerResult = routeHandler.handle(pathContext, formContext);
         HandlerResultProcessor handlerResultProcessor = handlerResultProcessorRegistry.resolve(handlerResult);
         if(handlerResultProcessor == null) {
             PrintWriter printWriter = resp.getWriter();

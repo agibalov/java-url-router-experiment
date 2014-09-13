@@ -1,3 +1,5 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!doctype html>
 <html>
     <head>
@@ -13,6 +15,18 @@
                 <li><a href="/page/1">Page 1</a></li>
                 <li><a href="/page/hello">Page Hello</a></li>
             </ul>
+            <form method="post" action="/">
+                <input type="text" name="message" value="">
+                <button type="submit">Submit</button>
+            </form>
+            <c:choose>
+                <c:when test="${model.message != null}">
+                    <p>Message is: ${model.message}</p>
+                </c:when>
+                <c:otherwise>
+                    <p>No message</p>
+                </c:otherwise>
+            </c:choose>
         </div>
     </body>
 </html>
