@@ -8,7 +8,7 @@ import me.loki2302.framework.results.mav.ModelAndViewHandlerResultProcessor;
 import me.loki2302.framework.handling.RouteHandler;
 import me.loki2302.framework.routing.Router;
 
-import static me.loki2302.framework.routing.naive.NaiveRouteDSL.*;
+import static me.loki2302.framework.routing.advanced.AdvancedRouteDSL.*;
 
 public class DummyModule extends AbstractModule {
     @Override
@@ -16,9 +16,9 @@ public class DummyModule extends AbstractModule {
         bind(DummyServlet.class).asEagerSingleton();
 
         Router<Class<? extends RouteHandler>> router = new Router<Class<? extends RouteHandler>>()
-                .addRoute(route(c("")), IndexRouteHandler.class)
-                .addRoute(route(c("page"), v("id")), PageRouteHandler.class)
-                .addRoute(route(c("css")), ResourceRouteHandler.class);
+                .addRoute(route(segment("")), IndexRouteHandler.class)
+                .addRoute(route(sequence(segment("page"), variable("id"))), PageRouteHandler.class)
+                .addRoute(route(segment("static"), any("path")), ResourceRouteHandler.class);
 
         bind(new TypeLiteral<Router<Class<? extends RouteHandler>>>() {}).toInstance(router);
 

@@ -7,6 +7,7 @@ import java.util.Map;
 public class ResourceRouteHandler implements RouteHandler {
     @Override
     public Object handle(Map<String, Object> context) {
-        return getClass().getResourceAsStream("/style.css");
+        String path = (String)context.get("path");
+        return getClass().getResourceAsStream("/assets" + path);
     }
 }
