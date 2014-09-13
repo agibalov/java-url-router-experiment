@@ -1,27 +1,26 @@
 package me.loki2302.framework.routing.advanced;
 
-public class StaticPartMatcher implements PartMatcher {
-    private final String[] templateSegments;
+import java.util.HashMap;
 
-    public StaticPartMatcher(String[] templateSegments) {
-        this.templateSegments = templateSegments;
+public class StaticPartMatcher implements PartMatcher {
+    private final String segmentTemplate;
+
+    public StaticPartMatcher(String segmentTemplate) {
+        this.segmentTemplate = segmentTemplate;
     }
 
     @Override
     public PartMatchResult match(String[] segments) {
-        if(segments.length < templateSegments.length) {
+        if(segments.length < 1) {
             return PartMatchResult.noMatch();
         }
 
-        int numberOfSegments = templateSegments.length;
-        for(int i = 0; i < numberOfSegments; ++i) {
-            String expectedSegment = templateSegments[i];
-            String actualSegment = segments[i];
-            if(!actualSegment.equals(expectedSegment)) {
-                return PartMatchResult.noMatch();
-            }
+        String firstSegment = segments[0];
+        if(!firstSegment.equals(segmentTemplate)) {
+            return PartMatchResult.noMatch();
         }
 
-        return PartMatchResult.match(numberOfSegments);
+        HashMap<String, Object> context = new HashMap<String, Object>();
+        return PartMatchResult.match(1, context);
     }
 }

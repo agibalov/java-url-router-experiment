@@ -8,32 +8,18 @@ import static org.junit.Assert.assertTrue;
 
 public class StaticPartMatcherTest {
     @Test
-    public void canMatchSingleSegment() {
-        StaticPartMatcher m = new StaticPartMatcher(new String[]{ "hello" });
+    public void canMatch() {
+        StaticPartMatcher m = new StaticPartMatcher("hello");
         PartMatchResult result = m.match(new String[]{ "hello" });
         assertTrue(result.match);
         assertEquals(1, result.segmentsConsumed);
+        assertTrue(result.context.isEmpty());
     }
 
     @Test
-    public void canMatchMultipleSegments() {
-        StaticPartMatcher m = new StaticPartMatcher(new String[]{ "hello", "there" });
-        PartMatchResult result = m.match(new String[]{ "hello", "there" });
-        assertTrue(result.match);
-        assertEquals(2, result.segmentsConsumed);
-    }
-
-    @Test
-    public void noMatchWhenSingleSegmentDoesNotMatch() {
-        StaticPartMatcher m = new StaticPartMatcher(new String[]{ "hello" });
+    public void canNotMatch() {
+        StaticPartMatcher m = new StaticPartMatcher("hello");
         PartMatchResult result = m.match(new String[]{ "bye" });
-        assertFalse(result.match);
-    }
-
-    @Test
-    public void noMatchWhenLastSegmentDoesNotMatch() {
-        StaticPartMatcher m = new StaticPartMatcher(new String[]{ "hello", "there" });
-        PartMatchResult result = m.match(new String[]{ "hello", "ther" });
         assertFalse(result.match);
     }
 }
