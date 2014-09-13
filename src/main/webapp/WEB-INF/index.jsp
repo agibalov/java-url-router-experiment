@@ -7,6 +7,7 @@
     <body>
         <div class="container">
             <h1>Index</h1>
+            <span class="glyphicon glyphicon-star"></span>
             <ul>
                 <li><a href="/">Index</a></li>
                 <li><a href="/page/1">Page 1</a></li>
