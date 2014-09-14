@@ -10,7 +10,7 @@ import static me.loki2302.framework.results.mav.ModelAndView.modelAndView;
 
 public class PageRouteHandler implements RouteHandler {
     @Inject
-    @Named("path-id")
+    @PathParam("id")
     private String id;
 
     @Override

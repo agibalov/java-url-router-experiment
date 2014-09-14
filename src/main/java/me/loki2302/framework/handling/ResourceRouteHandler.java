@@ -1,11 +1,11 @@
 package me.loki2302.framework.handling;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import me.loki2302.PathParam;
 
 public class ResourceRouteHandler implements RouteHandler {
     @Inject
-    @Named("path-path")
+    @PathParam("path")
     private String relativePath;
 
     // TODO: get rid of it
