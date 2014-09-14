@@ -6,6 +6,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import me.loki2302.framework.FormContextModule;
 import me.loki2302.framework.PathContextModule;
+import me.loki2302.framework.QueryContextModule;
 import me.loki2302.framework.handling.RouteHandler;
 import me.loki2302.framework.results.HandlerResultProcessor;
 import me.loki2302.framework.results.HandlerResultProcessorRegistry;
@@ -13,6 +14,8 @@ import me.loki2302.framework.results.is.InputStreamHandlerResultProcessor;
 import me.loki2302.framework.results.mav.ModelAndViewHandlerResultProcessor;
 import me.loki2302.framework.routing.RouteResolutionResult;
 import me.loki2302.framework.routing.Router;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,7 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DummyServlet extends HttpServlet {
@@ -61,10 +66,12 @@ public class DummyServlet extends HttpServlet {
 
         PathContextModule pathContextModule = makePathContextModule(routeResolutionResult.context);
         FormContextModule formContextModule = makeFormContextModule(req);
+        QueryContextModule queryContextModule = makeQueryContextModule(req);
         Injector requestContextInjector = injector.createChildInjector(
                 handlerModule,
                 pathContextModule,
-                formContextModule);
+                formContextModule,
+                queryContextModule);
 
         RouteHandler routeHandler = requestContextInjector.getInstance(handlerClass);
         Object handlerResult = routeHandler.handle();
@@ -98,6 +105,17 @@ public class DummyServlet extends HttpServlet {
 
         FormContextModule formContextModule = new FormContextModule(formContext);
         return formContextModule;
+    }
+
+    private static QueryContextModule makeQueryContextModule(HttpServletRequest req) {
+        String queryString = req.getQueryString();
+        List<NameValuePair> nameValuePairs = URLEncodedUtils.parse(queryString, Charset.forName("UTF-8"));
+        Map<String, String> queryMap = new HashMap<String, String>();
+        for(NameValuePair nameValuePair : nameValuePairs) {
+            queryMap.put(nameValuePair.getName(), nameValuePair.getValue());
+        }
+
+        return new QueryContextModule(queryMap);
     }
 
     private static Module makeHandlerModule(final Class<?> handlerClass) {

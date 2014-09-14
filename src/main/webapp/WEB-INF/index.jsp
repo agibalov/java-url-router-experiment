@@ -12,6 +12,7 @@
             <span class="glyphicon glyphicon-star"></span>
             <ul>
                 <li><a href="/">Index</a></li>
+                <li><a href="/?page=hello%20there">Index with query param</a></li>
                 <li><a href="/page/1">Page 1</a></li>
                 <li><a href="/page/hello">Page Hello</a></li>
             </ul>
@@ -25,6 +26,14 @@
                 </c:when>
                 <c:otherwise>
                     <p>No message</p>
+                </c:otherwise>
+            </c:choose>
+            <c:choose>
+                <c:when test="${model.page != null}">
+                    <p>Page is: ${model.page}</p>
+                </c:when>
+                <c:otherwise>
+                    <p>No page</p>
                 </c:otherwise>
             </c:choose>
         </div>
