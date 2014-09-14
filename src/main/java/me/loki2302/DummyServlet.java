@@ -3,6 +3,7 @@ package me.loki2302;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import me.loki2302.framework.RequestContextModule;
 import me.loki2302.framework.handling.RouteHandler;
 import me.loki2302.framework.results.HandlerResultProcessor;
 import me.loki2302.framework.results.HandlerResultProcessorRegistry;

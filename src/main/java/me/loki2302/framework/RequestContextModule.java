@@ -1,12 +1,10 @@
-package me.loki2302;
+package me.loki2302.framework;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.name.Named;
-import com.google.inject.name.Names;
+import me.loki2302.framework.FormParam;
+import me.loki2302.framework.PathParam;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
 public class RequestContextModule extends AbstractModule {

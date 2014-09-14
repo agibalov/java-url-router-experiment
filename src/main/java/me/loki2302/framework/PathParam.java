@@ -1,4 +1,4 @@
-package me.loki2302;
+package me.loki2302.framework;
 
 import com.google.inject.BindingAnnotation;
 

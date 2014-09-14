@@ -1,6 +1,7 @@
 package me.loki2302;
 
 import com.google.inject.Inject;
+import me.loki2302.framework.FormParam;
 import me.loki2302.framework.handling.RouteHandler;
 
 import java.util.HashMap;
