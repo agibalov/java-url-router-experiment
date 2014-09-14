@@ -1,23 +1,22 @@
 package me.loki2302.framework.handling;
 
-import java.util.Map;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 public class ResourceRouteHandler implements RouteHandler {
-    private final String pathContextVariableName;
-    private final String root;
+    @Inject
+    @Named("path-path")
+    private String relativePath;
 
-    public ResourceRouteHandler(String pathContextVariableName, String root) {
-        this.pathContextVariableName = pathContextVariableName;
-        this.root = root;
-    }
+    // TODO: get rid of it
+    private final String root = "/assets";
 
     @Override
-    public Object handle(Map<String, Object> pathContext, Map<String, String> formContext) {
-        if(!pathContext.containsKey(pathContextVariableName)) {
-            throw new RuntimeException("Context doesn't have " + pathContextVariableName);
+    public Object handle() {
+        if(relativePath == null) {
+            throw new RuntimeException("There's no path");
         }
 
-        String relativePath = (String) pathContext.get(pathContextVariableName);
         return getClass().getResourceAsStream(root + relativePath);
     }
 }

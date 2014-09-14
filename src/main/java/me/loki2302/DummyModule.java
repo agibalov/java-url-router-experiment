@@ -26,7 +26,5 @@ public class DummyModule extends AbstractModule {
         bind(ModelAndViewHandlerResultProcessor.class).asEagerSingleton();
         bind(InputStreamHandlerResultProcessor.class).asEagerSingleton();
         bind(HandlerResultProcessorRegistry.class).asEagerSingleton();
-
-        bind(ResourceRouteHandler.class).toInstance(new ResourceRouteHandler("path", "/assets"));
     }
 }

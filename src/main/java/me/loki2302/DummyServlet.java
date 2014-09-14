@@ -1,5 +1,6 @@
 package me.loki2302;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import me.loki2302.framework.handling.RouteHandler;
@@ -65,9 +66,20 @@ public class DummyServlet extends HttpServlet {
         }
 
         Map<String, Object> pathContext = routeResolutionResult.context;
-        Class<? extends RouteHandler> handlerClass = routeResolutionResult.handler;
-        RouteHandler routeHandler = injector.getInstance(handlerClass);
-        Object handlerResult = routeHandler.handle(pathContext, formContext);
+        final Class<? extends RouteHandler> handlerClass = routeResolutionResult.handler;
+
+        RequestContextModule requestContextModule = new RequestContextModule(
+                pathContext,
+                formContext);
+        Injector requestContextInjector = injector.createChildInjector(requestContextModule, new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(handlerClass);
+            }
+        });
+
+        RouteHandler routeHandler = requestContextInjector.getInstance(handlerClass);
+        Object handlerResult = routeHandler.handle();
         HandlerResultProcessor handlerResultProcessor = handlerResultProcessorRegistry.resolve(handlerResult);
         if(handlerResultProcessor == null) {
             PrintWriter printWriter = resp.getWriter();
