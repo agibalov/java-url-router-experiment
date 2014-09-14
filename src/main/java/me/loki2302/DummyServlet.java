@@ -3,7 +3,9 @@ package me.loki2302;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import me.loki2302.framework.RequestContextModule;
+import com.google.inject.Module;
+import me.loki2302.framework.FormContextModule;
+import me.loki2302.framework.PathContextModule;
 import me.loki2302.framework.handling.RouteHandler;
 import me.loki2302.framework.results.HandlerResultProcessor;
 import me.loki2302.framework.results.HandlerResultProcessorRegistry;
@@ -54,6 +56,34 @@ public class DummyServlet extends HttpServlet {
             return;
         }
 
+        Class<? extends RouteHandler> handlerClass = routeResolutionResult.handler;
+        Module handlerModule = makeHandlerModule(handlerClass);
+
+        PathContextModule pathContextModule = makePathContextModule(routeResolutionResult.context);
+        FormContextModule formContextModule = makeFormContextModule(req);
+        Injector requestContextInjector = injector.createChildInjector(
+                handlerModule,
+                pathContextModule,
+                formContextModule);
+
+        RouteHandler routeHandler = requestContextInjector.getInstance(handlerClass);
+        Object handlerResult = routeHandler.handle();
+        HandlerResultProcessor handlerResultProcessor = handlerResultProcessorRegistry.resolve(handlerResult);
+        if(handlerResultProcessor == null) {
+            PrintWriter printWriter = resp.getWriter();
+            printWriter.println("Failed to resolve result processor");
+            printWriter.close();
+        }
+
+        handlerResultProcessor.process(handlerResult, req, resp);
+    }
+
+    private static PathContextModule makePathContextModule(Map<String, Object> pathContext) {
+        PathContextModule pathContextModule = new PathContextModule(pathContext);
+        return pathContextModule;
+    }
+
+    private static FormContextModule makeFormContextModule(HttpServletRequest req) {
         Map<String, String[]> parameterMap = req.getParameterMap();
         Map<String, String> formContext = new HashMap<String, String>();
         for(String parameterName : parameterMap.keySet()) {
@@ -66,28 +96,16 @@ public class DummyServlet extends HttpServlet {
             formContext.put(parameterName, singleValue);
         }
 
-        Map<String, Object> pathContext = routeResolutionResult.context;
-        final Class<? extends RouteHandler> handlerClass = routeResolutionResult.handler;
+        FormContextModule formContextModule = new FormContextModule(formContext);
+        return formContextModule;
+    }
 
-        RequestContextModule requestContextModule = new RequestContextModule(
-                pathContext,
-                formContext);
-        Injector requestContextInjector = injector.createChildInjector(requestContextModule, new AbstractModule() {
+    private static Module makeHandlerModule(final Class<?> handlerClass) {
+        return new AbstractModule() {
             @Override
             protected void configure() {
                 bind(handlerClass);
             }
-        });
-
-        RouteHandler routeHandler = requestContextInjector.getInstance(handlerClass);
-        Object handlerResult = routeHandler.handle();
-        HandlerResultProcessor handlerResultProcessor = handlerResultProcessorRegistry.resolve(handlerResult);
-        if(handlerResultProcessor == null) {
-            PrintWriter printWriter = resp.getWriter();
-            printWriter.println("Failed to resolve result processor");
-            printWriter.close();
-        }
-
-        handlerResultProcessor.process(handlerResult, req, resp);
+        };
     }
 }
