@@ -1,7 +1,7 @@
 package me.loki2302;
 
 import com.google.inject.Inject;
-import me.loki2302.framework.PathParam;
+import me.loki2302.framework.context.PathParam;
 import me.loki2302.framework.handling.RouteHandler;
 
 import java.util.Collections;

@@ -1,31 +1,32 @@
-package me.loki2302.framework;
+package me.loki2302.framework.context;
 
 import com.google.inject.AbstractModule;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
-public class QueryContextModule extends AbstractModule {
-    private final Map<String, String> queryContext;
+public class PathContextModule extends AbstractModule {
+    private final Map<String, Object> pathContext;
 
-    public QueryContextModule(Map<String, String> queryContext) {
-        this.queryContext = queryContext;
+    public PathContextModule(Map<String, Object> pathContext) {
+        this.pathContext = pathContext;
     }
 
     @Override
     protected void configure() {
-        for(String queryContextKey : queryContext.keySet()) {
-            String value = queryContext.get(queryContextKey);
+        for(String pathContextKey : pathContext.keySet()) {
+            // how do I inject Objects as Strings?
+            String value = (String)pathContext.get(pathContextKey);
             bindConstant()
-                    .annotatedWith(new QueryParamImpl(queryContextKey))
+                    .annotatedWith(new PathParamImpl(pathContextKey))
                     .to(value);
         }
     }
 
-    private static class QueryParamImpl implements QueryParam {
+    private static class PathParamImpl implements PathParam {
         private final String value;
 
-        public QueryParamImpl(String value) {
+        public PathParamImpl(String value) {
             this.value = value;
         }
 
@@ -35,7 +36,7 @@ public class QueryContextModule extends AbstractModule {
         }
 
         public Class<? extends Annotation> annotationType() {
-            return QueryParam.class;
+            return PathParam.class;
         }
 
         public int hashCode() {
@@ -44,16 +45,16 @@ public class QueryContextModule extends AbstractModule {
         }
 
         public boolean equals(Object o) {
-            if (!(o instanceof QueryParam)) {
+            if (!(o instanceof PathParam)) {
                 return false;
             }
 
-            QueryParam other = (QueryParam)o;
+            PathParam other = (PathParam)o;
             return value.equals(other.value());
         }
 
         public String toString() {
-            return "@" + QueryParam.class.getName() + "(value=" + value + ")";
+            return "@" + PathParam.class.getName() + "(value=" + value + ")";
         }
     }
 }

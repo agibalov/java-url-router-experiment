@@ -1,18 +1,15 @@
-package me.loki2302;
+package me.loki2302.framework.servlet;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import me.loki2302.framework.FormContextModule;
-import me.loki2302.framework.PathContextModule;
-import me.loki2302.framework.QueryContextModule;
-import me.loki2302.framework.handling.ResourceRouteHandler;
+import me.loki2302.framework.context.FormContextModule;
+import me.loki2302.framework.context.PathContextModule;
+import me.loki2302.framework.context.QueryContextModule;
 import me.loki2302.framework.handling.RouteHandler;
 import me.loki2302.framework.results.HandlerResultProcessor;
 import me.loki2302.framework.results.HandlerResultProcessorRegistry;
-import me.loki2302.framework.results.is.InputStreamHandlerResultProcessor;
-import me.loki2302.framework.results.mav.ModelAndViewHandlerResultProcessor;
 import me.loki2302.framework.routing.RouteResolutionResult;
 import me.loki2302.framework.routing.Router;
 import org.apache.http.NameValuePair;
@@ -29,15 +26,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static me.loki2302.framework.routing.advanced.AdvancedRouteDSL.*;
-
-public class DummyServlet extends HttpServlet {
+public class WebApplicationServlet extends HttpServlet {
     private final Injector injector;
     private final Router<Class<? extends RouteHandler>> router;
     private final HandlerResultProcessorRegistry handlerResultProcessorRegistry;
 
     @Inject
-    public DummyServlet(
+    public WebApplicationServlet(
             Injector injector,
             Router<Class<? extends RouteHandler>> router,
             HandlerResultProcessorRegistry handlerResultProcessorRegistry) {
@@ -45,9 +40,6 @@ public class DummyServlet extends HttpServlet {
         this.injector = injector;
         this.router = router;
         this.handlerResultProcessorRegistry = handlerResultProcessorRegistry;
-
-        setUpRoutes(router);
-        setUpHandlerResultProcessRegistry(handlerResultProcessorRegistry);
     }
 
     @Override
@@ -126,18 +118,5 @@ public class DummyServlet extends HttpServlet {
                 bind(handlerClass);
             }
         };
-    }
-
-    // TODO: application specific code - extract
-    private static void setUpRoutes(Router<Class<? extends RouteHandler>> router) {
-        router
-                .addRoute(route(segment("")), IndexRouteHandler.class)
-                .addRoute(route(sequence(segment("page"), variable("id"))), PageRouteHandler.class)
-                .addRoute(route(segment("static"), any("path")), ResourceRouteHandler.class);
-    }
-
-    private static void setUpHandlerResultProcessRegistry(HandlerResultProcessorRegistry registry) {
-        registry.register(new ModelAndViewHandlerResultProcessor("/WEB-INF/", ".jsp"));
-        registry.register(new InputStreamHandlerResultProcessor());
     }
 }
