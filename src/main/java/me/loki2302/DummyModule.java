@@ -23,7 +23,8 @@ public class DummyModule extends AbstractModule {
 
         bind(new TypeLiteral<Router<Class<? extends RouteHandler>>>() {}).toInstance(router);
 
-        bind(ModelAndViewHandlerResultProcessor.class).asEagerSingleton();
+        bind(ModelAndViewHandlerResultProcessor.class)
+                .toInstance(new ModelAndViewHandlerResultProcessor("/WEB-INF/", ".jsp"));
         bind(InputStreamHandlerResultProcessor.class).asEagerSingleton();
         bind(HandlerResultProcessorRegistry.class).asEagerSingleton();
     }

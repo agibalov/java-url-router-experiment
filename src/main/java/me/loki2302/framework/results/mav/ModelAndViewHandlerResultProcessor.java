@@ -10,6 +10,14 @@ import java.io.IOException;
 import java.util.Map;
 
 public class ModelAndViewHandlerResultProcessor implements HandlerResultProcessor {
+    private final String prefix;
+    private final String suffix;
+
+    public ModelAndViewHandlerResultProcessor(String prefix, String suffix) {
+        this.prefix = prefix;
+        this.suffix = suffix;
+    }
+
     @Override
     public boolean canProcess(Object result) {
         return result != null && result instanceof ModelAndView;
@@ -22,7 +30,7 @@ public class ModelAndViewHandlerResultProcessor implements HandlerResultProcesso
         request.setAttribute("model", model);
 
         String view = modelAndView.view;
-        RequestDispatcher jspRequestDispatcher = request.getRequestDispatcher("/WEB-INF/" + view + ".jsp");
+        RequestDispatcher jspRequestDispatcher = request.getRequestDispatcher(prefix + view + suffix);
 
         response.setStatus(HttpServletResponse.SC_OK);
         jspRequestDispatcher.forward(request, response);
