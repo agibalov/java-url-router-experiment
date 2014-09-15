@@ -12,9 +12,10 @@ import static me.loki2302.framework.routing.naive.NaiveRouteDSL.*;
 import static org.junit.Assert.*;
 
 public class NaiveRoutesTest {
-    private final static Router<String> router = new Router<String>()
-        .addRoute(route(c("api"), c("posts"), v("id"), c("comments")), "comments")
-        .addRoute(route(c("api"), c("posts"), v("id")), "post");
+    private final static Router<String> router = new Router<String>() {{
+        addRoute(route(c("api"), c("posts"), v("id"), c("comments")), "comments");
+        addRoute(route(c("api"), c("posts"), v("id")), "post");
+    }};
 
     @Test
     public void canResolveRouteByUrl() {

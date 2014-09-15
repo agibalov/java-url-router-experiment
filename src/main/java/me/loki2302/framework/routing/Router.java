@@ -8,9 +8,8 @@ import java.util.Map;
 public class Router<THandler> {
     private Map<Route, THandler> routes = new HashMap<Route, THandler>();
 
-    public Router addRoute(Route route, THandler handler) {
+    public void addRoute(Route route, THandler handler) {
         routes.put(route, handler);
-        return this;
     }
 
     public RouteResolutionResult<THandler> resolve(String url) {
