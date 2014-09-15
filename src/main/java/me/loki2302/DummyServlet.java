@@ -7,6 +7,7 @@ import com.google.inject.Module;
 import me.loki2302.framework.FormContextModule;
 import me.loki2302.framework.PathContextModule;
 import me.loki2302.framework.QueryContextModule;
+import me.loki2302.framework.handling.ResourceRouteHandler;
 import me.loki2302.framework.handling.RouteHandler;
 import me.loki2302.framework.results.HandlerResultProcessor;
 import me.loki2302.framework.results.HandlerResultProcessorRegistry;
@@ -28,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static me.loki2302.framework.routing.advanced.AdvancedRouteDSL.*;
+
 public class DummyServlet extends HttpServlet {
     private final Injector injector;
     private final Router<Class<? extends RouteHandler>> router;
@@ -43,10 +46,8 @@ public class DummyServlet extends HttpServlet {
         this.router = router;
         this.handlerResultProcessorRegistry = handlerResultProcessorRegistry;
 
-        // TODO: get rid of this asap
-        handlerResultProcessorRegistry.register(injector.getInstance(ModelAndViewHandlerResultProcessor.class));
-        handlerResultProcessorRegistry.register(injector.getInstance(InputStreamHandlerResultProcessor.class));
-        //
+        setUpRoutes(router);
+        setUpHandlerResultProcessRegistry(handlerResultProcessorRegistry);
     }
 
     @Override
@@ -125,5 +126,18 @@ public class DummyServlet extends HttpServlet {
                 bind(handlerClass);
             }
         };
+    }
+
+    // TODO: application specific code - extract
+    private static void setUpRoutes(Router<Class<? extends RouteHandler>> router) {
+        router
+                .addRoute(route(segment("")), IndexRouteHandler.class)
+                .addRoute(route(sequence(segment("page"), variable("id"))), PageRouteHandler.class)
+                .addRoute(route(segment("static"), any("path")), ResourceRouteHandler.class);
+    }
+
+    private static void setUpHandlerResultProcessRegistry(HandlerResultProcessorRegistry registry) {
+        registry.register(new ModelAndViewHandlerResultProcessor("/WEB-INF/", ".jsp"));
+        registry.register(new InputStreamHandlerResultProcessor());
     }
 }
