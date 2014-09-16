@@ -44,38 +44,50 @@ public class WebApplicationServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String requestURI = req.getRequestURI();
+        try {
+            String requestURI = req.getRequestURI();
 
-        RouteResolutionResult<Class<? extends RouteHandler>> routeResolutionResult = router.resolve(requestURI);
-        if(!routeResolutionResult.resolved) {
+            RouteResolutionResult<Class<? extends RouteHandler>> routeResolutionResult =
+                    router.resolve(requestURI);
+            if (!routeResolutionResult.resolved) {
+                throw new RouteNotFoundException();
+            }
+
+            Class<? extends RouteHandler> handlerClass = routeResolutionResult.handler;
+            Module handlerModule = makeHandlerModule(handlerClass);
+
+            PathContextModule pathContextModule = makePathContextModule(routeResolutionResult.context);
+            FormContextModule formContextModule = makeFormContextModule(req);
+            QueryContextModule queryContextModule = makeQueryContextModule(req);
+            Injector requestContextInjector = injector.createChildInjector(
+                    handlerModule,
+                    pathContextModule,
+                    formContextModule,
+                    queryContextModule);
+
+            RouteHandler routeHandler = requestContextInjector.getInstance(handlerClass);
+            Object handlerResult = routeHandler.handle();
+            HandlerResultProcessor handlerResultProcessor =
+                    handlerResultProcessorRegistry.resolve(handlerResult);
+            if (handlerResultProcessor == null) {
+                throw new ResultProcessorNotFoundException();
+            }
+
+            handlerResultProcessor.process(handlerResult, req, resp);
+
+        } catch(RouteNotFoundException e) {
             PrintWriter printWriter = resp.getWriter();
             printWriter.println("Didn't resolve the route");
             printWriter.close();
-            return;
-        }
-
-        Class<? extends RouteHandler> handlerClass = routeResolutionResult.handler;
-        Module handlerModule = makeHandlerModule(handlerClass);
-
-        PathContextModule pathContextModule = makePathContextModule(routeResolutionResult.context);
-        FormContextModule formContextModule = makeFormContextModule(req);
-        QueryContextModule queryContextModule = makeQueryContextModule(req);
-        Injector requestContextInjector = injector.createChildInjector(
-                handlerModule,
-                pathContextModule,
-                formContextModule,
-                queryContextModule);
-
-        RouteHandler routeHandler = requestContextInjector.getInstance(handlerClass);
-        Object handlerResult = routeHandler.handle();
-        HandlerResultProcessor handlerResultProcessor = handlerResultProcessorRegistry.resolve(handlerResult);
-        if(handlerResultProcessor == null) {
+        } catch(ResultProcessorNotFoundException e) {
             PrintWriter printWriter = resp.getWriter();
             printWriter.println("Failed to resolve result processor");
             printWriter.close();
+        } catch(RuntimeException e) {
+            PrintWriter printWriter = resp.getWriter();
+            printWriter.println("There was an internal error");
+            printWriter.close();
         }
-
-        handlerResultProcessor.process(handlerResult, req, resp);
     }
 
     private static PathContextModule makePathContextModule(Map<String, Object> pathContext) {
