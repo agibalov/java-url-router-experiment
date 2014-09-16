@@ -1,16 +1,9 @@
-<!doctype html>
-<html>
-    <head>
-        <title>Page ${model.pageId}</title>
-        <link rel="stylesheet" type="text/css" href="/static/style.css">
-    </head>
-    <body>
-        <h1>Page ${model.pageId}</h1>
-        <ul>
-            <li><a href="/">Index</a></li>
-            <li><a href="/?page=hello%20there">Index with query param</a></li>
-            <li><a href="/page/1">Page 1</a></li>
-            <li><a href="/page/hello">Page Hello</a></li>
-        </ul>
-    </body>
-</html>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="demo" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<demo:layout>
+    <jsp:attribute name="content">
+        <h1 class="red-header">Page ${model.pageId}</h1>
+        <demo:menu />
+    </jsp:attribute>
+</demo:layout>
