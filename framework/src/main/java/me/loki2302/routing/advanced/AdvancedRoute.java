@@ -5,12 +5,13 @@ import me.loki2302.routing.RouteMatchResult;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AdvancedRoute implements Route {
-    private final PartMatcher[] matchers;
+    private final List<PartMatcher> matchers;
 
-    public AdvancedRoute(PartMatcher... matchers) {
+    public AdvancedRoute(List<PartMatcher> matchers) {
         this.matchers = matchers;
     }
 

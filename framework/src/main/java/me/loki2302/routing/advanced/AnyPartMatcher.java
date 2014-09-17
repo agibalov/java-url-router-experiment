@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AnyPartMatcher implements PartMatcher {
-    private final String name;
+    public final String name;
 
     public AnyPartMatcher(String name) {
         this.name = name;

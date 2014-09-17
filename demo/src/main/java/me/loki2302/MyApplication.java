@@ -16,9 +16,9 @@ import static me.loki2302.routing.advanced.AdvancedRouteDSL.*;
 public class MyApplication extends WebApplication {
     @Override
     protected void configureRoutes(Router<Class<? extends RouteHandler>> router) {
-        router.addRoute(route(segment("")), IndexRouteHandler.class);
-        router.addRoute(route(sequence(segment("page"), variable("id"))), PageRouteHandler.class);
-        router.addRoute(route(segment("static"), any("path")), ResourceRouteHandler.class);
+        router.addRoute(route(""), IndexRouteHandler.class);
+        router.addRoute(route("page/:id"), PageRouteHandler.class);
+        router.addRoute(route("static/*path"), ResourceRouteHandler.class);
     }
 
     @Override

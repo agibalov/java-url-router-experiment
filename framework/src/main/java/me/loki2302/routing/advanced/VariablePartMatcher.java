@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class VariablePartMatcher implements PartMatcher {
-    private final String name;
+    public final String name;
 
     public VariablePartMatcher(String name) {
         this.name = name;

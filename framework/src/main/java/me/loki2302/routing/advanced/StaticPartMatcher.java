@@ -3,7 +3,7 @@ package me.loki2302.routing.advanced;
 import java.util.HashMap;
 
 public class StaticPartMatcher implements PartMatcher {
-    private final String segmentTemplate;
+    public final String segmentTemplate;
 
     public StaticPartMatcher(String segmentTemplate) {
         this.segmentTemplate = segmentTemplate;

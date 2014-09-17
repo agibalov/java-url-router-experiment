@@ -15,5 +15,4 @@ public class AnyPartMatcherTest {
         assertEquals(1, result.context.size());
         assertEquals("/hello/there/123", result.context.get("path"));
     }
-
 }
