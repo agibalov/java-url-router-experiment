@@ -1,5 +1,7 @@
 package me.loki2302.routing;
 
+import me.loki2302.routing.advanced.AdvancedRouteDSL;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,25 @@ public class Router<THandler> {
 
     public void addRoute(Route route, THandler handler) {
         routes.put(route, handler);
+    }
+
+    public void addRoute(THandler handler) {
+        if(!(handler instanceof Class<?>)) {
+            throw new RuntimeException("handler is expected to be a Class");
+        }
+
+        Class<?> classHandler = (Class<?>)handler;
+        RequestHandler requestHandler =
+                classHandler.getAnnotation(RequestHandler.class);
+        if(requestHandler == null) {
+            throw new RuntimeException("Handler " + classHandler.getName() +
+                    " is expected to have a " +
+                    RequestHandler.class.getName() + " annotation");
+        }
+
+        String template = requestHandler.value();
+        Route route = AdvancedRouteDSL.route(template);
+        addRoute(route, handler);
     }
 
     public RouteResolutionResult<THandler> resolve(String url) {

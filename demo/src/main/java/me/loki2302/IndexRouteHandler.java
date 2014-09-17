@@ -4,12 +4,14 @@ import com.google.inject.Inject;
 import me.loki2302.context.FormParam;
 import me.loki2302.context.QueryParam;
 import me.loki2302.handling.RouteHandler;
+import me.loki2302.routing.RequestHandler;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static me.loki2302.results.mav.ModelAndView.modelAndView;
 
+@RequestHandler("")
 public class IndexRouteHandler implements RouteHandler {
     @Inject(optional = true)
     @FormParam("message")
