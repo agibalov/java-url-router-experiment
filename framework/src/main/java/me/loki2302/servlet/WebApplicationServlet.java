@@ -1,12 +1,7 @@
 package me.loki2302.servlet;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import me.loki2302.context.FormContextModule;
-import me.loki2302.context.PathContextModule;
-import me.loki2302.context.QueryContextModule;
+import com.google.inject.*;
+import me.loki2302.context.*;
 import me.loki2302.handling.RouteHandler;
 import me.loki2302.results.HandlerResultProcessor;
 import me.loki2302.results.HandlerResultProcessorRegistry;
@@ -28,13 +23,13 @@ import java.util.Map;
 
 public class WebApplicationServlet extends HttpServlet {
     private final Injector injector;
-    private final Router<Class<? extends RouteHandler>> router;
+    private final Router<Key<? extends RouteHandler>> router;
     private final HandlerResultProcessorRegistry handlerResultProcessorRegistry;
 
     @Inject
     public WebApplicationServlet(
             Injector injector,
-            Router<Class<? extends RouteHandler>> router,
+            Router<Key<? extends RouteHandler>> router,
             HandlerResultProcessorRegistry handlerResultProcessorRegistry) {
 
         this.injector = injector;
@@ -47,26 +42,21 @@ public class WebApplicationServlet extends HttpServlet {
         try {
             String requestURI = req.getRequestURI();
 
-            RouteResolutionResult<Class<? extends RouteHandler>> routeResolutionResult =
+            RouteResolutionResult<Key<? extends RouteHandler>> routeResolutionResult =
                     router.resolve(requestURI);
             if (!routeResolutionResult.resolved) {
                 throw new RouteNotFoundException();
             }
 
-            Class<? extends RouteHandler> handlerClass = routeResolutionResult.handler;
-            Module handlerModule = makeHandlerModule(handlerClass);
+            Key<? extends RouteHandler> handlerKey = routeResolutionResult.handler;
+            RouteHandler routeHandler = injector.getInstance(handlerKey);
 
-            PathContextModule pathContextModule = makePathContextModule(routeResolutionResult.context);
-            FormContextModule formContextModule = makeFormContextModule(req);
-            QueryContextModule queryContextModule = makeQueryContextModule(req);
-            Injector requestContextInjector = injector.createChildInjector(
-                    handlerModule,
-                    pathContextModule,
-                    formContextModule,
-                    queryContextModule);
+            RequestContext requestContext = new RequestContext();
+            requestContext.pathParams = makePathParams(routeResolutionResult.context);
+            requestContext.queryParams = makeQueryParams(req);
+            requestContext.formParams = makeFormParams(req);
+            Object handlerResult = routeHandler.handle(requestContext);
 
-            RouteHandler routeHandler = requestContextInjector.getInstance(handlerClass);
-            Object handlerResult = routeHandler.handle();
             HandlerResultProcessor handlerResultProcessor =
                     handlerResultProcessorRegistry.resolve(handlerResult);
             if (handlerResultProcessor == null) {
@@ -90,14 +80,24 @@ public class WebApplicationServlet extends HttpServlet {
         }
     }
 
-    private static PathContextModule makePathContextModule(Map<String, Object> pathContext) {
-        PathContextModule pathContextModule = new PathContextModule(pathContext);
-        return pathContextModule;
+    private static Map<String, Object> makePathParams(Map<String, Object> pathParams) {
+        return pathParams;
     }
 
-    private static FormContextModule makeFormContextModule(HttpServletRequest req) {
+    private static Map<String, String> makeQueryParams(HttpServletRequest req) {
+        String queryString = req.getQueryString();
+        List<NameValuePair> nameValuePairs = URLEncodedUtils.parse(queryString, Charset.forName("UTF-8"));
+        Map<String, String> queryParams = new HashMap<String, String>();
+        for(NameValuePair nameValuePair : nameValuePairs) {
+            queryParams.put(nameValuePair.getName(), nameValuePair.getValue());
+        }
+
+        return queryParams;
+    }
+
+    private static Map<String, String> makeFormParams(HttpServletRequest req) {
         Map<String, String[]> parameterMap = req.getParameterMap();
-        Map<String, String> formContext = new HashMap<String, String>();
+        Map<String, String> formParams = new HashMap<String, String>();
         for(String parameterName : parameterMap.keySet()) {
             String[] parameterValues = parameterMap.get(parameterName);
             if(parameterValues.length != 1) {
@@ -105,30 +105,9 @@ public class WebApplicationServlet extends HttpServlet {
             }
 
             String singleValue = parameterValues[0];
-            formContext.put(parameterName, singleValue);
+            formParams.put(parameterName, singleValue);
         }
 
-        FormContextModule formContextModule = new FormContextModule(formContext);
-        return formContextModule;
-    }
-
-    private static QueryContextModule makeQueryContextModule(HttpServletRequest req) {
-        String queryString = req.getQueryString();
-        List<NameValuePair> nameValuePairs = URLEncodedUtils.parse(queryString, Charset.forName("UTF-8"));
-        Map<String, String> queryMap = new HashMap<String, String>();
-        for(NameValuePair nameValuePair : nameValuePairs) {
-            queryMap.put(nameValuePair.getName(), nameValuePair.getValue());
-        }
-
-        return new QueryContextModule(queryMap);
-    }
-
-    private static Module makeHandlerModule(final Class<?> handlerClass) {
-        return new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(handlerClass);
-            }
-        };
+        return formParams;
     }
 }

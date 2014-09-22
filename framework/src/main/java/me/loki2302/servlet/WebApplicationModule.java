@@ -1,6 +1,7 @@
 package me.loki2302.servlet;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import me.loki2302.handling.RouteHandler;
 import me.loki2302.results.HandlerResultProcessorRegistry;
@@ -12,8 +13,8 @@ public class WebApplicationModule extends AbstractModule {
         bind(WebApplicationServlet.class)
                 .asEagerSingleton();
 
-        bind(new TypeLiteral<Router<Class<? extends RouteHandler>>>() {})
-                .toInstance(new Router<Class<? extends RouteHandler>>());
+        bind(new TypeLiteral<Router<Key<? extends RouteHandler>>>() {})
+                .toInstance(new Router<Key<? extends RouteHandler>>());
 
         bind(HandlerResultProcessorRegistry.class)
                 .asEagerSingleton();

@@ -1,22 +1,19 @@
 package me.loki2302.handling;
 
-import com.google.inject.Inject;
-import me.loki2302.context.PathParam;
+import me.loki2302.context.RequestContext;
 
 public class ResourceRouteHandler implements RouteHandler {
-    @Inject
-    @PathParam("path")
-    private String relativePath;
+    private final String root;
+    private final String pathParamName;
 
-    // TODO: get rid of it
-    private final String root = "/assets";
+    public ResourceRouteHandler(String root, String pathParamName) {
+        this.root = root;
+        this.pathParamName = pathParamName;
+    }
 
     @Override
-    public Object handle() {
-        if(relativePath == null) {
-            throw new RuntimeException("There's no path");
-        }
-
-        return getClass().getResourceAsStream(root + relativePath);
+    public Object handle(RequestContext requestContext) {
+        String path = root + requestContext.pathParams.get("path");
+        return getClass().getResourceAsStream(path);
     }
 }

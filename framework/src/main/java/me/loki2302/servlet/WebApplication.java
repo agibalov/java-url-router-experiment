@@ -1,9 +1,6 @@
 package me.loki2302.servlet;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.TypeLiteral;
+import com.google.inject.*;
 import me.loki2302.handling.RouteHandler;
 import me.loki2302.results.HandlerResultProcessorRegistry;
 import me.loki2302.routing.Router;
@@ -12,16 +9,19 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRegistration;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class WebApplication implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        Injector injector = Guice.createInjector(new WebApplicationModule());
+        List<Module> modules = new ArrayList<Module>();
+        modules.add(new WebApplicationModule());
+        modules.addAll(provideModules());
+        Injector injector = Guice.createInjector(modules.toArray(new Module[modules.size()]));
 
-        Router<Class<? extends RouteHandler>> router =
-                injector.getInstance(
-                        Key.get(new TypeLiteral<Router<Class<? extends RouteHandler>>>() {
-                        }));
+        Router<Key<? extends RouteHandler>> router =
+                injector.getInstance(Key.get(new TypeLiteral<Router<Key<? extends RouteHandler>>>() {}));
         configureRoutes(router);
 
         HandlerResultProcessorRegistry resultProcessorRegistry =
@@ -40,6 +40,7 @@ public abstract class WebApplication implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
     }
 
-    protected abstract void configureRoutes(Router<Class<? extends RouteHandler>> router);
+    protected abstract List<Module> provideModules();
+    protected abstract void configureRoutes(Router<Key<? extends RouteHandler>> router);
     protected abstract void configureResultProcessors(HandlerResultProcessorRegistry registry);
 }

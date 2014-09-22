@@ -1,28 +1,19 @@
 package me.loki2302;
 
-import com.google.inject.Inject;
-import me.loki2302.context.FormParam;
-import me.loki2302.context.QueryParam;
+import me.loki2302.context.RequestContext;
 import me.loki2302.handling.RouteHandler;
-import me.loki2302.routing.RequestHandler;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static me.loki2302.results.mav.ModelAndView.modelAndView;
 
-@RequestHandler("")
 public class IndexRouteHandler implements RouteHandler {
-    @Inject(optional = true)
-    @FormParam("message")
-    private String message;
-
-    @Inject(optional = true)
-    @QueryParam("page")
-    private String page;
-
     @Override
-    public Object handle() {
+    public Object handle(RequestContext requestContext) {
+        String message = requestContext.formParams.get("message");
+        String page = requestContext.queryParams.get("page");
+
         Map<String, Object> model = new HashMap<String, Object>();
         if(message != null) {
             model.put("message", message);
