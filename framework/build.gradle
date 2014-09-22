@@ -5,6 +5,9 @@ version = '1.0'
 
 repositories {
     mavenCentral()
+    maven {
+        url "http://dl.bintray.com/loki2302/maven/"
+    }
 }
 
 dependencies {
@@ -13,4 +16,5 @@ dependencies {
     compile 'com.google.inject:guice:3.0'
     compile 'commons-io:commons-io:2.4'
     compile 'org.apache.httpcomponents:httpclient:4.3.5'
+    compile 'me.loki2302:springly:0.2'
 }
