@@ -1,29 +1,23 @@
 package me.loki2302;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Key;
 import com.google.inject.Module;
-import com.google.inject.name.Names;
 import me.loki2302.context.RequestContext;
-import me.loki2302.results.str.StringHandlerResultProcessor;
-import me.loki2302.servlet.WebApplication;
 import me.loki2302.handling.ResourceRouteHandler;
-import me.loki2302.handling.RouteHandler;
 import me.loki2302.results.HandlerResultProcessorRegistry;
 import me.loki2302.results.is.InputStreamHandlerResultProcessor;
 import me.loki2302.results.mav.ModelAndViewHandlerResultProcessor;
+import me.loki2302.results.str.StringHandlerResultProcessor;
 import me.loki2302.routing.Router;
-import me.loki2302.springly.HandlerMethodArgumentResolverRegistry;
-import me.loki2302.springly.web.ControllerParameterMeta;
-import me.loki2302.springly.web.PathParamArgumentResolver;
-import me.loki2302.springly.web.QueryParamArgumentResolver;
+import me.loki2302.servlet.WebApplication;
+import me.loki2302.handling.convention.framework.HandlerMethodArgumentResolverRegistry;
+import me.loki2302.handling.convention.ControllerParameterMeta;
+import me.loki2302.handling.convention.PathParamArgumentResolver;
+import me.loki2302.handling.convention.QueryParamArgumentResolver;
 
 import javax.servlet.annotation.WebListener;
-
 import java.util.Arrays;
 import java.util.List;
-
-import static me.loki2302.routing.advanced.AdvancedRouteDSL.*;
 
 @WebListener
 public class MyApplication extends WebApplication {
@@ -34,17 +28,16 @@ public class MyApplication extends WebApplication {
             protected void configure() {
                 bind(IndexRouteHandler.class).asEagerSingleton();
                 bind(PageRouteHandler.class).asEagerSingleton();
-                bind(ResourceRouteHandler.class).annotatedWith(Names.named("res")).toInstance(new ResourceRouteHandler("/assets", "path"));
                 bind(HelloController.class).asEagerSingleton();
             }
         });
     }
 
     @Override
-    protected void configureRoutes(Router<Key<? extends RouteHandler>> router) {
-        router.addRoute(route(""), Key.get(IndexRouteHandler.class));
-        router.addRoute(route("page/:id"), Key.get(PageRouteHandler.class));
-        router.addRoute(route("static/*path"), Key.get(ResourceRouteHandler.class, Names.named("res")));
+    protected void configureRoutes(Router router) {
+        router.addRoute("", IndexRouteHandler.class);
+        router.addRoute("page/:id", PageRouteHandler.class);
+        router.addRoute("static/*path", new ResourceRouteHandler("/assets", "path"));
         router.addController(HelloController.class);
     }
 

@@ -1,4 +1,4 @@
-package me.loki2302.springly.web;
+package me.loki2302.handling.convention;
 
 public class ControllerClassMeta {
     private final Class<?> controllerClass;

@@ -1,13 +1,14 @@
 package me.loki2302.servlet;
 
-import com.google.inject.*;
-import me.loki2302.context.*;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import me.loki2302.context.RequestContext;
 import me.loki2302.handling.RouteHandler;
 import me.loki2302.results.HandlerResultProcessor;
 import me.loki2302.results.HandlerResultProcessorRegistry;
+import me.loki2302.routing.RouteHandlerResolver;
 import me.loki2302.routing.RouteResolutionResult;
 import me.loki2302.routing.Router;
-import me.loki2302.springly.web.ControllerMethodHandler;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
@@ -24,13 +25,13 @@ import java.util.Map;
 
 public class WebApplicationServlet extends HttpServlet {
     private final Injector injector;
-    private final Router<Key<? extends RouteHandler>> router;
+    private final Router router;
     private final HandlerResultProcessorRegistry handlerResultProcessorRegistry;
 
     @Inject
     public WebApplicationServlet(
             Injector injector,
-            Router<Key<? extends RouteHandler>> router,
+            Router router,
             HandlerResultProcessorRegistry handlerResultProcessorRegistry) {
 
         this.injector = injector;
@@ -43,22 +44,15 @@ public class WebApplicationServlet extends HttpServlet {
         try {
             String requestURI = req.getRequestURI();
 
-            RouteResolutionResult<Key<? extends RouteHandler>> routeResolutionResult =
+            RouteResolutionResult<RouteHandlerResolver> routeResolutionResult =
                     router.resolve(requestURI);
+
             if (!routeResolutionResult.resolved) {
                 throw new RouteNotFoundException();
             }
 
-            Object handlerObject = routeResolutionResult.handler;
-            RouteHandler routeHandler = null;
-            if(handlerObject instanceof Key) {
-                Key<? extends RouteHandler> handlerKey = routeResolutionResult.handler;
-                routeHandler = injector.getInstance(handlerKey);
-            } else if(handlerObject instanceof ControllerMethodHandler) {
-                routeHandler =  (RouteHandler)handlerObject;
-            } else {
-                throw new RuntimeException("Unknown handlerObject");
-            }
+            RouteHandlerResolver routeHandlerResolver = routeResolutionResult.handler;
+            RouteHandler routeHandler = routeHandlerResolver.getRouteHandler(injector);
 
             RequestContext requestContext = new RequestContext();
             requestContext.injector = injector;

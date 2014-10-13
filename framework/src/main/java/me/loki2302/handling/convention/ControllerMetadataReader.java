@@ -1,9 +1,9 @@
-package me.loki2302.springly.web;
+package me.loki2302.handling.convention;
 
-import me.loki2302.springly.ClassHelper;
-import me.loki2302.springly.MetadataReader;
-import me.loki2302.springly.MethodHelper;
-import me.loki2302.springly.ParameterHelper;
+import me.loki2302.handling.convention.framework.ClassHelper;
+import me.loki2302.handling.convention.framework.MetadataReader;
+import me.loki2302.handling.convention.framework.MethodHelper;
+import me.loki2302.handling.convention.framework.ParameterHelper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

@@ -3,7 +3,7 @@ package me.loki2302.routing.advanced;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdvancedRouteParser {
+public class RouteParser {
     public List<PartMatcher> parse(String template) {
         String[] parts = template.split("/");
         List<PartMatcher> matchers = new ArrayList<PartMatcher>();

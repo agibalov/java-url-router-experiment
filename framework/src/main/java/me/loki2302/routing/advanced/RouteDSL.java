@@ -1,23 +1,21 @@
 package me.loki2302.routing.advanced;
 
-import me.loki2302.routing.Route;
-
 import java.util.Arrays;
 import java.util.List;
 
-public final class AdvancedRouteDSL {
-    private static final AdvancedRouteParser parser = new AdvancedRouteParser();
+public final class RouteDSL {
+    private static final RouteParser parser = new RouteParser();
 
-    private AdvancedRouteDSL() {
+    private RouteDSL() {
     }
 
     public static Route route(PartMatcher... matchers) {
-        return new AdvancedRoute(Arrays.asList(matchers));
+        return new Route(Arrays.asList(matchers));
     }
 
     public static Route route(String template) {
         List<PartMatcher> matchers = parser.parse(template);
-        return new AdvancedRoute(matchers);
+        return new Route(matchers);
     }
 
     public static PartMatcher sequence(PartMatcher... matchers) {

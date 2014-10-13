@@ -1,16 +1,13 @@
-package me.loki2302.springly.web;
+package me.loki2302.handling.convention;
 
 import me.loki2302.context.RequestContext;
-import me.loki2302.springly.HandlerMethodArgumentResolver;
+import me.loki2302.handling.convention.framework.HandlerMethodArgumentResolver;
 
 public class QueryParamArgumentResolver implements HandlerMethodArgumentResolver<ControllerParameterMeta, RequestContext> {
     @Override
     public boolean canResolve(
             ControllerParameterMeta controllerParameterMeta,
             RequestContext requestContext) {
-
-        System.out.printf("class: %s\n", controllerParameterMeta.getParameterClass());
-        System.out.printf("annotation: %s\n", controllerParameterMeta.getAnnotation(QueryParam.class));
 
         return controllerParameterMeta.getParameterClass() == String.class &&
                 controllerParameterMeta.getAnnotation(QueryParam.class) != null;

@@ -1,19 +1,27 @@
 package me.loki2302;
 
-import me.loki2302.springly.web.PathParam;
-import me.loki2302.springly.web.QueryParam;
-import me.loki2302.springly.web.RequestMapping;
+import me.loki2302.handling.convention.PathParam;
+import me.loki2302.handling.convention.QueryParam;
+import me.loki2302.handling.convention.RequestMapping;
+import me.loki2302.results.mav.ModelAndView;
 
+import java.util.Collections;
+
+@RequestMapping(value = "controller")
 public class HelloController {
 
-    @RequestMapping(value = "controller")
-    public String index(@QueryParam("id") String id) {
-        return String.format("Hello controller, query param id = %s!", id);
+    @RequestMapping(value = "")
+    public ModelAndView index(@QueryParam("id") String id) {
+        return ModelAndView.modelAndView(
+                Collections.<String, Object>singletonMap("id", id),
+                "controller-query");
     }
 
-    @RequestMapping(value = "controller/:id")
-    public String withPath(@PathParam("id") String id) {
-        return String.format("Hello controller, path param id = %s!\n", id);
+    @RequestMapping(value = "/:id")
+    public ModelAndView withPath(@PathParam("id") String id) {
+        return ModelAndView.modelAndView(
+                Collections.<String, Object>singletonMap("id", id),
+                "controller-path");
     }
 
 }

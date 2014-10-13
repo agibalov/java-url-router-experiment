@@ -5,13 +5,13 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static me.loki2302.routing.advanced.AdvancedRouteDSL.*;
+import static me.loki2302.routing.advanced.RouteDSL.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class ParserTest {
-    private final static AdvancedRouteParser parser = new AdvancedRouteParser();
+    private final static RouteParser parser = new RouteParser();
 
     @Test
     public void parserWorks() {

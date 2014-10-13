@@ -1,7 +1,7 @@
-package me.loki2302.springly.web;
+package me.loki2302.handling.convention;
 
 import me.loki2302.context.RequestContext;
-import me.loki2302.springly.HandlerMethodArgumentResolver;
+import me.loki2302.handling.convention.framework.HandlerMethodArgumentResolver;
 
 public class PathParamArgumentResolver implements HandlerMethodArgumentResolver<ControllerParameterMeta, RequestContext> {
     @Override

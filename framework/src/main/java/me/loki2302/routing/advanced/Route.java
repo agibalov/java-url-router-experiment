@@ -1,6 +1,5 @@
 package me.loki2302.routing.advanced;
 
-import me.loki2302.routing.Route;
 import me.loki2302.routing.RouteMatchResult;
 
 import java.util.Arrays;
@@ -8,14 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AdvancedRoute implements Route {
+public class Route {
     private final List<PartMatcher> matchers;
 
-    public AdvancedRoute(List<PartMatcher> matchers) {
+    public Route(List<PartMatcher> matchers) {
         this.matchers = matchers;
     }
 
-    @Override
     public RouteMatchResult match(String url) {
         if(url.startsWith("/")) {
             url = url.substring(1);
@@ -47,7 +45,6 @@ public class AdvancedRoute implements Route {
         return RouteMatchResult.match(this, context);
     }
 
-    @Override
     public String build(Map<String, Object> context) {
         throw new RuntimeException("Not implemented");
     }

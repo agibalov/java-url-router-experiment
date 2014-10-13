@@ -8,10 +8,10 @@ import java.util.Collections;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class AdvancedRouteTest {
+public class RouteTest {
     @Test
     public void canMatch() {
-        AdvancedRoute r = new AdvancedRoute(
+        Route r = new Route(
                 Collections.<PartMatcher>singletonList(
                         new StaticPartMatcher("hello")));
         RouteMatchResult result = r.match("/hello");
@@ -21,7 +21,7 @@ public class AdvancedRouteTest {
 
     @Test
     public void canNotMatchWhenSegmentDoesNotMatch() {
-        AdvancedRoute r = new AdvancedRoute(
+        Route r = new Route(
                 Collections.<PartMatcher>singletonList(
                         new StaticPartMatcher("hello")));
         RouteMatchResult result = r.match("/bye");
@@ -30,7 +30,7 @@ public class AdvancedRouteTest {
 
     @Test
     public void canNotMatchWhenPathIsLongerThenExpected() {
-        AdvancedRoute r = new AdvancedRoute(
+        Route r = new Route(
                 Collections.<PartMatcher>singletonList(
                         new StaticPartMatcher("hello")));
         RouteMatchResult result = r.match("/hello/there");

@@ -1,39 +1,53 @@
 package me.loki2302.routing;
 
-import com.google.inject.Key;
 import me.loki2302.handling.RouteHandler;
-import me.loki2302.routing.advanced.AdvancedRouteDSL;
-import me.loki2302.springly.HandlerReader;
-import me.loki2302.springly.web.*;
+import me.loki2302.handling.convention.*;
+import me.loki2302.routing.advanced.PartMatcher;
+import me.loki2302.routing.advanced.Route;
+import me.loki2302.routing.advanced.RouteParser;
+import me.loki2302.handling.convention.framework.HandlerReader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Router<THandler> {
-    private final Map<Route, THandler> routes = new HashMap<Route, THandler>();
+public class Router {
+    private final RouteParser routeParser;
+    private final Map<Route, RouteHandlerResolver> routes = new HashMap<Route, RouteHandlerResolver>();
     private final HandlerReader<ControllerClassMeta, ControllerMethodMeta, ControllerParameterMeta, ControllerMethodHandler> handlerReader;
 
-    public Router() {
+    public Router(RouteParser routeParser) {
+        this.routeParser = routeParser;
         ControllerMetadataReader controllerMetadataReader = new ControllerMetadataReader();
         handlerReader = new HandlerReader<ControllerClassMeta, ControllerMethodMeta, ControllerParameterMeta, ControllerMethodHandler>(controllerMetadataReader);
     }
 
-    public void addRoute(Route route, THandler handler) {
-        routes.put(route, handler);
+    public void addRoute(String routeString, Class<? extends RouteHandler> handlerClass) {
+        List<PartMatcher> partMatchers = routeParser.parse(routeString);
+        Route route = new Route(partMatchers);
+        RouteHandlerResolver handlerClassRouteHandlerResolver =
+                new HandlerClassRouteHandlerResolver(handlerClass);
+        routes.put(route, handlerClassRouteHandlerResolver);
+    }
+
+    public void addRoute(String routeString, RouteHandler handlerInstance) {
+        List<PartMatcher> partMatchers = routeParser.parse(routeString);
+        Route route = new Route(partMatchers);
+        RouteHandlerResolver handlerInstanceHandlerResolver =
+                new HandlerInstanceHandlerResolver(handlerInstance);
+        routes.put(route, handlerInstanceHandlerResolver);
     }
 
     public void addController(Class<?> controllerClass) {
         List<ControllerMethodHandler> handlers = handlerReader.readClass(controllerClass);
         for(ControllerMethodHandler handler : handlers) {
             String routeString = handler.getPath();
-            Route route = AdvancedRouteDSL.route(routeString);
-            addRoute(route, (THandler)handler);
+            addRoute(routeString, handler);
         }
     }
 
-    public RouteResolutionResult<THandler> resolve(String url) {
+    public RouteResolutionResult<RouteHandlerResolver> resolve(String url) {
         List<RouteMatchResult> routeMatches = new ArrayList<RouteMatchResult>();
         for(Route route : routes.keySet()) {
             RouteMatchResult routeMatchResult = route.match(url);
@@ -53,9 +67,9 @@ public class Router<THandler> {
         }
 
         RouteMatchResult singleResult = routeMatches.get(0);
-        THandler handler = routes.get(singleResult.route);
+        RouteHandlerResolver routeHandlerResolver = routes.get(singleResult.route);
         return RouteResolutionResult.singleMatchingRoute(
-                handler,
+                routeHandlerResolver,
                 singleResult.route,
                 singleResult.context);
     }

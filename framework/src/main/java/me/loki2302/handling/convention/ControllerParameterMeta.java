@@ -1,4 +1,4 @@
-package me.loki2302.springly.web;
+package me.loki2302.handling.convention;
 
 import java.lang.annotation.Annotation;
 

@@ -1,11 +1,11 @@
-package me.loki2302.springly.web;
+package me.loki2302.handling.convention;
 
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import me.loki2302.context.RequestContext;
 import me.loki2302.handling.RouteHandler;
-import me.loki2302.springly.HandlerMethodArgumentResolverRegistry;
+import me.loki2302.handling.convention.framework.HandlerMethodArgumentResolverRegistry;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -1,4 +1,4 @@
-package me.loki2302.springly;
+package me.loki2302.handling.convention.framework;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
