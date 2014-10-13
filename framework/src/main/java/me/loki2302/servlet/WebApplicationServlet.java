@@ -9,6 +9,8 @@ import me.loki2302.results.HandlerResultProcessorRegistry;
 import me.loki2302.routing.RouteHandlerResolver;
 import me.loki2302.routing.RouteResolutionResult;
 import me.loki2302.routing.Router;
+import me.loki2302.routing.advanced.RequestMethod;
+import me.loki2302.routing.advanced.RequestMethodParser;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.slf4j.Logger;
@@ -30,31 +32,42 @@ public class WebApplicationServlet extends HttpServlet {
 
     private final Injector injector;
     private final Router router;
+    private final RequestMethodParser requestMethodParser;
     private final HandlerResultProcessorRegistry handlerResultProcessorRegistry;
 
     @Inject
     public WebApplicationServlet(
             Injector injector,
             Router router,
+            RequestMethodParser requestMethodParser,
             HandlerResultProcessorRegistry handlerResultProcessorRegistry) {
 
         this.injector = injector;
         this.router = router;
+        this.requestMethodParser = requestMethodParser;
         this.handlerResultProcessorRegistry = handlerResultProcessorRegistry;
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String requestMethodString = req.getMethod();
         String requestURI = req.getRequestURI();
-        logger.info("Request: {}", requestURI);
+        logger.info("Request: {} {}", requestMethodString, requestURI);
 
         try {
-            RouteResolutionResult<RouteHandlerResolver> routeResolutionResult = router.resolve(requestURI);
+            RequestMethod requestMethod = requestMethodParser.parse(requestMethodString);
+            if(requestMethod == null) {
+                throw new RuntimeException("Unknown request method: " + requestMethodString);
+            }
+
+            RouteResolutionResult routeResolutionResult = router.resolve(
+                    requestMethod,
+                    requestURI);
             if (!routeResolutionResult.resolved) {
                 throw new RouteNotFoundException();
             }
 
-            RouteHandlerResolver routeHandlerResolver = routeResolutionResult.handler;
+            RouteHandlerResolver routeHandlerResolver = routeResolutionResult.handlerResolver;
             RouteHandler routeHandler = routeHandlerResolver.getRouteHandler(injector);
             logger.info("Resolved to request handler {}", routeHandler);
 

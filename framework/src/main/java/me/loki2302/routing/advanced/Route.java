@@ -8,13 +8,19 @@ import java.util.List;
 import java.util.Map;
 
 public class Route {
-    private final List<PartMatcher> matchers;
+    private final MethodMatcher methodMatcher;
+    private final List<PartMatcher> partMatchers;
 
-    public Route(List<PartMatcher> matchers) {
-        this.matchers = matchers;
+    public Route(MethodMatcher methodMatcher, List<PartMatcher> partMatchers) {
+        this.methodMatcher = methodMatcher;
+        this.partMatchers = partMatchers;
     }
 
-    public RouteMatchResult match(String url) {
+    public RouteMatchResult match(RequestMethod requestMethod, String url) {
+        if(!methodMatcher.match(requestMethod)) {
+            return RouteMatchResult.noMatch(this);
+        }
+
         if(url.startsWith("/")) {
             url = url.substring(1);
         }
@@ -23,7 +29,7 @@ public class Route {
         Map<String, Object> context = new HashMap<String, Object>();
         String[] remainingSegments = segments;
         int segmentsConsumed = 0;
-        for(PartMatcher matcher : matchers) {
+        for(PartMatcher matcher : partMatchers) {
             PartMatchResult result = matcher.match(remainingSegments);
             if (!result.match) {
                 return RouteMatchResult.noMatch(this);

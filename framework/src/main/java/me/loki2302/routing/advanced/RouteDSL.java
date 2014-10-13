@@ -9,13 +9,13 @@ public final class RouteDSL {
     private RouteDSL() {
     }
 
-    public static Route route(PartMatcher... matchers) {
-        return new Route(Arrays.asList(matchers));
+    public static Route route(MethodMatcher methodMatcher, PartMatcher... matchers) {
+        return new Route(methodMatcher, Arrays.asList(matchers));
     }
 
-    public static Route route(String template) {
+    public static Route route(MethodMatcher methodMatcher, String template) {
         List<PartMatcher> matchers = parser.parse(template);
-        return new Route(matchers);
+        return new Route(methodMatcher, matchers);
     }
 
     public static PartMatcher sequence(PartMatcher... matchers) {

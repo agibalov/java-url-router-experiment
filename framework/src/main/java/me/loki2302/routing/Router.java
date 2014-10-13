@@ -2,9 +2,7 @@ package me.loki2302.routing;
 
 import me.loki2302.handling.RouteHandler;
 import me.loki2302.handling.convention.*;
-import me.loki2302.routing.advanced.PartMatcher;
-import me.loki2302.routing.advanced.Route;
-import me.loki2302.routing.advanced.RouteParser;
+import me.loki2302.routing.advanced.*;
 import me.loki2302.handling.convention.framework.HandlerReader;
 
 import java.util.ArrayList;
@@ -24,16 +22,18 @@ public class Router {
     }
 
     public void addRoute(String routeString, Class<? extends RouteHandler> handlerClass) {
+        MethodMatcher methodMatcher = new AnyMethodMatcher();
         List<PartMatcher> partMatchers = routeParser.parse(routeString);
-        Route route = new Route(partMatchers);
+        Route route = new Route(methodMatcher, partMatchers);
         RouteHandlerResolver handlerClassRouteHandlerResolver =
                 new HandlerClassRouteHandlerResolver(handlerClass);
         routes.put(route, handlerClassRouteHandlerResolver);
     }
 
     public void addRoute(String routeString, RouteHandler handlerInstance) {
+        MethodMatcher methodMatcher = new AnyMethodMatcher();
         List<PartMatcher> partMatchers = routeParser.parse(routeString);
-        Route route = new Route(partMatchers);
+        Route route = new Route(methodMatcher, partMatchers);
         RouteHandlerResolver handlerInstanceHandlerResolver =
                 new HandlerInstanceHandlerResolver(handlerInstance);
         routes.put(route, handlerInstanceHandlerResolver);
@@ -47,10 +47,10 @@ public class Router {
         }
     }
 
-    public RouteResolutionResult<RouteHandlerResolver> resolve(String url) {
+    public RouteResolutionResult resolve(RequestMethod requestMethod, String url) {
         List<RouteMatchResult> routeMatches = new ArrayList<RouteMatchResult>();
         for(Route route : routes.keySet()) {
-            RouteMatchResult routeMatchResult = route.match(url);
+            RouteMatchResult routeMatchResult = route.match(requestMethod, url);
             if(!routeMatchResult.match) {
                 continue;
             }
