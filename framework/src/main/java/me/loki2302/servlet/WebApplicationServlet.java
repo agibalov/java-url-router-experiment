@@ -11,6 +11,8 @@ import me.loki2302.routing.RouteResolutionResult;
 import me.loki2302.routing.Router;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 public class WebApplicationServlet extends HttpServlet {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final Injector injector;
     private final Router router;
     private final HandlerResultProcessorRegistry handlerResultProcessorRegistry;
@@ -41,43 +45,49 @@ public class WebApplicationServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String requestURI = req.getRequestURI();
+        logger.info("Request: {}", requestURI);
+
         try {
-            String requestURI = req.getRequestURI();
-
-            RouteResolutionResult<RouteHandlerResolver> routeResolutionResult =
-                    router.resolve(requestURI);
-
+            RouteResolutionResult<RouteHandlerResolver> routeResolutionResult = router.resolve(requestURI);
             if (!routeResolutionResult.resolved) {
                 throw new RouteNotFoundException();
             }
 
             RouteHandlerResolver routeHandlerResolver = routeResolutionResult.handler;
             RouteHandler routeHandler = routeHandlerResolver.getRouteHandler(injector);
+            logger.info("Resolved to request handler {}", routeHandler);
 
             RequestContext requestContext = new RequestContext();
             requestContext.injector = injector;
             requestContext.pathParams = makePathParams(routeResolutionResult.context);
             requestContext.queryParams = makeQueryParams(req);
             requestContext.formParams = makeFormParams(req);
-            Object handlerResult = routeHandler.handle(requestContext);
+            Object result = routeHandler.handle(requestContext);
+            logger.info("{} returned {}", routeHandler, result);
 
-            HandlerResultProcessor handlerResultProcessor =
-                    handlerResultProcessorRegistry.resolve(handlerResult);
+            HandlerResultProcessor handlerResultProcessor = handlerResultProcessorRegistry.resolve(result);
             if (handlerResultProcessor == null) {
-                throw new ResultProcessorNotFoundException();
+                throw new ResultProcessorNotFoundException(result);
             }
 
-            handlerResultProcessor.process(handlerResult, req, resp);
-
+            logger.info("Resolved to result processor {}", handlerResultProcessor);
+            handlerResultProcessor.process(result, req, resp);
         } catch(RouteNotFoundException e) {
+            logger.warn("Don't know how to handle {}", requestURI);
+
             PrintWriter printWriter = resp.getWriter();
             printWriter.println("Didn't resolve the route");
             printWriter.close();
         } catch(ResultProcessorNotFoundException e) {
+            logger.warn("Failed to resolve result processor for {}", e.result);
+
             PrintWriter printWriter = resp.getWriter();
             printWriter.println("Failed to resolve result processor");
             printWriter.close();
         } catch(RuntimeException e) {
+            logger.warn("There was an internal error", e);
+
             PrintWriter printWriter = resp.getWriter();
             printWriter.println("There was an internal error");
             printWriter.println();
