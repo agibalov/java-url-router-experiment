@@ -6,6 +6,7 @@ import com.google.inject.TypeLiteral;
 import me.loki2302.context.RequestContext;
 import me.loki2302.handling.RouteHandler;
 import me.loki2302.handling.convention.framework.HandlerMethodArgumentResolverRegistry;
+import me.loki2302.routing.advanced.RequestMethod;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,18 +17,25 @@ public class ControllerMethodHandler implements RouteHandler {
     private final Class<?> controllerClass;
     private final List<ControllerParameterMeta> parameters;
     private final Method method;
+    private final RequestMethod requestMethod;
     private final String path;
 
     public ControllerMethodHandler(
             Class<?> controllerClass,
             List<ControllerParameterMeta> parameters,
             Method method,
+            RequestMethod requestMethod,
             String path) {
 
         this.controllerClass = controllerClass;
         this.parameters = parameters;
         this.method = method;
+        this.requestMethod = requestMethod;
         this.path = path;
+    }
+
+    public RequestMethod getRequestMethod() {
+        return requestMethod;
     }
 
     public String getPath() {

@@ -4,6 +4,7 @@ import me.loki2302.handling.convention.framework.ClassHelper;
 import me.loki2302.handling.convention.framework.MetadataReader;
 import me.loki2302.handling.convention.framework.MethodHelper;
 import me.loki2302.handling.convention.framework.ParameterHelper;
+import me.loki2302.routing.advanced.RequestMethod;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -16,13 +17,16 @@ public class ControllerMetadataReader implements MetadataReader<ControllerClassM
             ClassHelper classHelper) {
 
         String path = null;
+        RequestMethod requestMethod = null;
         RequestMapping requestMapping = classHelper.getAnnotation(RequestMapping.class);
         if(requestMapping != null) {
             path = requestMapping.value();
+            requestMethod = requestMapping.method()[0];
         }
 
         ControllerClassMeta controllerClassMeta = new ControllerClassMeta(
                 clazz,
+                requestMethod,
                 path);
         return controllerClassMeta;
     }
@@ -33,14 +37,17 @@ public class ControllerMetadataReader implements MetadataReader<ControllerClassM
             Method method,
             MethodHelper methodHelper) {
 
-        String path = null;
         RequestMapping requestMapping = methodHelper.getAnnotation(RequestMapping.class);
-        if(requestMapping != null) {
-            path = requestMapping.value();
+        if(requestMapping == null) {
+            return null;
         }
+
+        String path = requestMapping.value();
+        RequestMethod requestMethod = requestMapping.method()[0];
 
         ControllerMethodMeta controllerMethodMeta = new ControllerMethodMeta(
                 method,
+                requestMethod,
                 path);
         return controllerMethodMeta;
     }
@@ -66,6 +73,38 @@ public class ControllerMetadataReader implements MetadataReader<ControllerClassM
             ControllerMethodMeta controllerMethodMeta,
             List<ControllerParameterMeta> controllerParameterMetas) {
 
+        RequestMethod requestMethod = computeRequestMethod(controllerClassMeta, controllerMethodMeta);
+        String path = computePath(controllerClassMeta, controllerMethodMeta);
+
+        Class<?> controllerClass = controllerClassMeta.getControllerClass();
+        Method controllerMethod = controllerMethodMeta.getMethod();
+
+        ControllerMethodHandler controllerMethodHandler = new ControllerMethodHandler(
+                controllerClass,
+                controllerParameterMetas,
+                controllerMethod,
+                requestMethod,
+                path);
+
+        return controllerMethodHandler;
+    }
+
+    private static RequestMethod computeRequestMethod(
+            ControllerClassMeta controllerClassMeta,
+            ControllerMethodMeta controllerMethodMeta) {
+
+        RequestMethod requestMethod = controllerMethodMeta.getRequestMethod();
+        if(requestMethod == null) {
+            requestMethod = controllerClassMeta.getRequestMethod();
+        }
+
+        return requestMethod;
+    }
+
+    private static String computePath(
+            ControllerClassMeta controllerClassMeta,
+            ControllerMethodMeta controllerMethodMeta) {
+
         String controllerPath = controllerClassMeta.getPath();
         if(controllerPath == null) {
             controllerPath = "";
@@ -78,15 +117,6 @@ public class ControllerMetadataReader implements MetadataReader<ControllerClassM
 
         String path = controllerPath + methodPath;
 
-        Class<?> controllerClass = controllerClassMeta.getControllerClass();
-        Method controllerMethod = controllerMethodMeta.getMethod();
-
-        ControllerMethodHandler controllerMethodHandler = new ControllerMethodHandler(
-                controllerClass,
-                controllerParameterMetas,
-                controllerMethod,
-                path);
-
-        return controllerMethodHandler;
+        return path;
     }
 }

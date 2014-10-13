@@ -32,19 +32,31 @@ public class Router {
 
     public void addRoute(String routeString, RouteHandler handlerInstance) {
         MethodMatcher methodMatcher = new AnyMethodMatcher();
-        List<PartMatcher> partMatchers = routeParser.parse(routeString);
-        Route route = new Route(methodMatcher, partMatchers);
-        RouteHandlerResolver handlerInstanceHandlerResolver =
-                new HandlerInstanceHandlerResolver(handlerInstance);
-        routes.put(route, handlerInstanceHandlerResolver);
+        addRoute(methodMatcher, routeString, handlerInstance);
     }
 
     public void addController(Class<?> controllerClass) {
         List<ControllerMethodHandler> handlers = handlerReader.readClass(controllerClass);
         for(ControllerMethodHandler handler : handlers) {
+            RequestMethod requestMethod = handler.getRequestMethod();
+            MethodMatcher methodMatcher;
+            if(requestMethod == null) {
+                methodMatcher = new AnyMethodMatcher();
+            } else {
+                methodMatcher = new ExactMethodMatcher(requestMethod);
+            }
+
             String routeString = handler.getPath();
-            addRoute(routeString, handler);
+            addRoute(methodMatcher, routeString, handler);
         }
+    }
+
+    public void addRoute(MethodMatcher methodMatcher, String routeString, RouteHandler handlerInstance) {
+        List<PartMatcher> partMatchers = routeParser.parse(routeString);
+        Route route = new Route(methodMatcher, partMatchers);
+        RouteHandlerResolver handlerInstanceHandlerResolver =
+                new HandlerInstanceHandlerResolver(handlerInstance);
+        routes.put(route, handlerInstanceHandlerResolver);
     }
 
     public RouteResolutionResult resolve(RequestMethod requestMethod, String url) {
