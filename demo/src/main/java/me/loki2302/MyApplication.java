@@ -4,6 +4,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
+import me.loki2302.context.RequestContext;
+import me.loki2302.results.str.StringHandlerResultProcessor;
 import me.loki2302.servlet.WebApplication;
 import me.loki2302.handling.ResourceRouteHandler;
 import me.loki2302.handling.RouteHandler;
@@ -11,6 +13,10 @@ import me.loki2302.results.HandlerResultProcessorRegistry;
 import me.loki2302.results.is.InputStreamHandlerResultProcessor;
 import me.loki2302.results.mav.ModelAndViewHandlerResultProcessor;
 import me.loki2302.routing.Router;
+import me.loki2302.springly.HandlerMethodArgumentResolverRegistry;
+import me.loki2302.springly.web.ControllerParameterMeta;
+import me.loki2302.springly.web.PathParamArgumentResolver;
+import me.loki2302.springly.web.QueryParamArgumentResolver;
 
 import javax.servlet.annotation.WebListener;
 
@@ -29,6 +35,7 @@ public class MyApplication extends WebApplication {
                 bind(IndexRouteHandler.class).asEagerSingleton();
                 bind(PageRouteHandler.class).asEagerSingleton();
                 bind(ResourceRouteHandler.class).annotatedWith(Names.named("res")).toInstance(new ResourceRouteHandler("/assets", "path"));
+                bind(HelloController.class).asEagerSingleton();
             }
         });
     }
@@ -38,11 +45,19 @@ public class MyApplication extends WebApplication {
         router.addRoute(route(""), Key.get(IndexRouteHandler.class));
         router.addRoute(route("page/:id"), Key.get(PageRouteHandler.class));
         router.addRoute(route("static/*path"), Key.get(ResourceRouteHandler.class, Names.named("res")));
+        router.addController(HelloController.class);
+    }
+
+    @Override
+    protected void configureHandlerMethodArgumentResolvers(HandlerMethodArgumentResolverRegistry<ControllerParameterMeta, RequestContext> registry) {
+        registry.register(new PathParamArgumentResolver());
+        registry.register(new QueryParamArgumentResolver());
     }
 
     @Override
     protected void configureResultProcessors(HandlerResultProcessorRegistry registry) {
         registry.register(new ModelAndViewHandlerResultProcessor("/WEB-INF/", ".jsp"));
         registry.register(new InputStreamHandlerResultProcessor());
+        registry.register(new StringHandlerResultProcessor());
     }
 }

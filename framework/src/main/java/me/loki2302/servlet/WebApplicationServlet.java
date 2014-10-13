@@ -7,6 +7,7 @@ import me.loki2302.results.HandlerResultProcessor;
 import me.loki2302.results.HandlerResultProcessorRegistry;
 import me.loki2302.routing.RouteResolutionResult;
 import me.loki2302.routing.Router;
+import me.loki2302.springly.web.ControllerMethodHandler;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
@@ -48,10 +49,19 @@ public class WebApplicationServlet extends HttpServlet {
                 throw new RouteNotFoundException();
             }
 
-            Key<? extends RouteHandler> handlerKey = routeResolutionResult.handler;
-            RouteHandler routeHandler = injector.getInstance(handlerKey);
+            Object handlerObject = routeResolutionResult.handler;
+            RouteHandler routeHandler = null;
+            if(handlerObject instanceof Key) {
+                Key<? extends RouteHandler> handlerKey = routeResolutionResult.handler;
+                routeHandler = injector.getInstance(handlerKey);
+            } else if(handlerObject instanceof ControllerMethodHandler) {
+                routeHandler =  (RouteHandler)handlerObject;
+            } else {
+                throw new RuntimeException("Unknown handlerObject");
+            }
 
             RequestContext requestContext = new RequestContext();
+            requestContext.injector = injector;
             requestContext.pathParams = makePathParams(routeResolutionResult.context);
             requestContext.queryParams = makeQueryParams(req);
             requestContext.formParams = makeFormParams(req);
@@ -76,6 +86,8 @@ public class WebApplicationServlet extends HttpServlet {
         } catch(RuntimeException e) {
             PrintWriter printWriter = resp.getWriter();
             printWriter.println("There was an internal error");
+            printWriter.println();
+            e.printStackTrace(printWriter);
             printWriter.close();
         }
     }
