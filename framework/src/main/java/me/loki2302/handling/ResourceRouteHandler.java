@@ -13,7 +13,7 @@ public class ResourceRouteHandler implements RouteHandler {
 
     @Override
     public Object handle(RequestContext requestContext) {
-        String path = root + requestContext.pathParams.get("path");
+        String path = root + requestContext.pathParams.get(pathParamName);
         return getClass().getResourceAsStream(path);
     }
 }
