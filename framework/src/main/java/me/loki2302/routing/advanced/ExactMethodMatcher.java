@@ -1,14 +1,16 @@
 package me.loki2302.routing.advanced;
 
-public class ExactMethodMatcher implements MethodMatcher {
-    private final RequestMethod expectedMethod;
+import java.util.Arrays;
 
-    public ExactMethodMatcher(RequestMethod expectedMethod) {
-        this.expectedMethod = expectedMethod;
+public class ExactMethodMatcher implements MethodMatcher {
+    private final RequestMethod[] expectedMethods;
+
+    public ExactMethodMatcher(RequestMethod[] expectedMethods) {
+        this.expectedMethods = expectedMethods;
     }
 
     @Override
     public boolean match(RequestMethod method) {
-        return method.equals(expectedMethod);
+        return Arrays.asList(expectedMethods).contains(method);
     }
 }

@@ -38,12 +38,12 @@ public class Router {
     public void addController(Class<?> controllerClass) {
         List<ControllerMethodHandler> handlers = handlerReader.readClass(controllerClass);
         for(ControllerMethodHandler handler : handlers) {
-            RequestMethod requestMethod = handler.getRequestMethod();
+            RequestMethod[] requestMethods = handler.getRequestMethods();
             MethodMatcher methodMatcher;
-            if(requestMethod == null) {
+            if(requestMethods.length == 0) {
                 methodMatcher = new AnyMethodMatcher();
             } else {
-                methodMatcher = new ExactMethodMatcher(requestMethod);
+                methodMatcher = new ExactMethodMatcher(requestMethods);
             }
 
             String routeString = handler.getPath();

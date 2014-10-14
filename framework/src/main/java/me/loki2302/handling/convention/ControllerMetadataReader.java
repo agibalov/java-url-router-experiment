@@ -16,18 +16,18 @@ public class ControllerMetadataReader implements MetadataReader<ControllerClassM
             Class<?> clazz,
             ClassHelper classHelper) {
 
-        String path = null;
-        RequestMethod requestMethod = null;
         RequestMapping requestMapping = classHelper.getAnnotation(RequestMapping.class);
-        if(requestMapping != null) {
-            path = requestMapping.value();
-            requestMethod = requestMapping.method()[0];
+        if(requestMapping == null) {
+            return null;
         }
 
+        String path = requestMapping.value();
+        RequestMethod[] requestMethods = requestMapping.method();
         ControllerClassMeta controllerClassMeta = new ControllerClassMeta(
                 clazz,
-                requestMethod,
+                requestMethods,
                 path);
+
         return controllerClassMeta;
     }
 
@@ -43,11 +43,11 @@ public class ControllerMetadataReader implements MetadataReader<ControllerClassM
         }
 
         String path = requestMapping.value();
-        RequestMethod requestMethod = requestMapping.method()[0];
+        RequestMethod[] requestMethods = requestMapping.method();
 
         ControllerMethodMeta controllerMethodMeta = new ControllerMethodMeta(
                 method,
-                requestMethod,
+                requestMethods,
                 path);
         return controllerMethodMeta;
     }
@@ -73,7 +73,7 @@ public class ControllerMetadataReader implements MetadataReader<ControllerClassM
             ControllerMethodMeta controllerMethodMeta,
             List<ControllerParameterMeta> controllerParameterMetas) {
 
-        RequestMethod requestMethod = computeRequestMethod(controllerClassMeta, controllerMethodMeta);
+        RequestMethod[] requestMethods = computeRequestMethods(controllerClassMeta, controllerMethodMeta);
         String path = computePath(controllerClassMeta, controllerMethodMeta);
 
         Class<?> controllerClass = controllerClassMeta.getControllerClass();
@@ -83,22 +83,22 @@ public class ControllerMetadataReader implements MetadataReader<ControllerClassM
                 controllerClass,
                 controllerParameterMetas,
                 controllerMethod,
-                requestMethod,
+                requestMethods,
                 path);
 
         return controllerMethodHandler;
     }
 
-    private static RequestMethod computeRequestMethod(
+    private static RequestMethod[] computeRequestMethods(
             ControllerClassMeta controllerClassMeta,
             ControllerMethodMeta controllerMethodMeta) {
 
-        RequestMethod requestMethod = controllerMethodMeta.getRequestMethod();
-        if(requestMethod == null) {
-            requestMethod = controllerClassMeta.getRequestMethod();
+        RequestMethod[] requestMethods = controllerMethodMeta.getRequestMethod();
+        if(requestMethods.length == 0) {
+            requestMethods = controllerClassMeta.getRequestMethods();
         }
 
-        return requestMethod;
+        return requestMethods;
     }
 
     private static String computePath(

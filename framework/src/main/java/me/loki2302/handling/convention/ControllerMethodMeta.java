@@ -6,16 +6,16 @@ import java.lang.reflect.Method;
 
 public class ControllerMethodMeta {
     private final Method method;
-    private final RequestMethod requestMethod;
+    private final RequestMethod[] requestMethods;
     private final String path;
 
     public ControllerMethodMeta(
             Method method,
-            RequestMethod requestMethod,
+            RequestMethod[] requestMethods,
             String path) {
 
         this.method = method;
-        this.requestMethod = requestMethod;
+        this.requestMethods = requestMethods;
         this.path = path;
     }
 
@@ -23,8 +23,8 @@ public class ControllerMethodMeta {
         return method;
     }
 
-    public RequestMethod getRequestMethod() {
-        return requestMethod;
+    public RequestMethod[] getRequestMethod() {
+        return requestMethods;
     }
 
     public String getPath() {

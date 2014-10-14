@@ -17,25 +17,25 @@ public class ControllerMethodHandler implements RouteHandler {
     private final Class<?> controllerClass;
     private final List<ControllerParameterMeta> parameters;
     private final Method method;
-    private final RequestMethod requestMethod;
+    private final RequestMethod[] requestMethods;
     private final String path;
 
     public ControllerMethodHandler(
             Class<?> controllerClass,
             List<ControllerParameterMeta> parameters,
             Method method,
-            RequestMethod requestMethod,
+            RequestMethod[] requestMethods,
             String path) {
 
         this.controllerClass = controllerClass;
         this.parameters = parameters;
         this.method = method;
-        this.requestMethod = requestMethod;
+        this.requestMethods = requestMethods;
         this.path = path;
     }
 
-    public RequestMethod getRequestMethod() {
-        return requestMethod;
+    public RequestMethod[] getRequestMethods() {
+        return requestMethods;
     }
 
     public String getPath() {
